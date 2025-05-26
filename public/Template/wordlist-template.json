@@ -1,0 +1,12 @@
+{
+  "title": "Enter Title Here",
+  "description": "Enter a brief description of the wordlist's purpose",
+  "language": "Enter Language Here",
+  "languageCode": "Enter Language Code Here",
+  "words": [
+    "EnterWord1",
+    "EnterWord2",
+    "EnterWord3",
+    "...add as many words as needed"
+  ]
+}
