@@ -85,7 +85,7 @@ const AboutPage: React.FC = () => {
             </div>
             <div className="flex items-center justify-center space-x-4">
               <a
-                href="https://github.com/spelling-master"
+                href="https://github.com/tuhin733/SpellingMaster"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
@@ -93,7 +93,7 @@ const AboutPage: React.FC = () => {
                 <Github className="w-5 h-5" />
               </a>
               <a
-                href="https://spelling-master.com"
+                href="https://spelling-master.vercel.app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
