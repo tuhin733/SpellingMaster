@@ -49,9 +49,9 @@ const Header: React.FC<HeaderProps> = ({
       }`}
     >
       <header
-        className={`flex items-center justify-between transition-all duration-300 backdrop-blur-lg ${
+        className={`flex items-center justify-between transition-all duration-300 backdrop-blur-md ${
           scrolled
-            ? "w-[95%] sm:w-[90%] md:w-[85%] rounded-full shadow-lg bg-white/95 dark:bg-secondary-900/95 dark:border dark:border-secondary-800 px-4 sm:px-6 py-2"
+            ? "w-[92%] sm:w-[88%] md:w-[82%] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] bg-white/90 dark:bg-secondary-900/90 dark:border dark:border-secondary-800/50 px-5 sm:px-7 py-3"
             : "w-full rounded-none bg-transparent dark:bg-transparent dark:border dark:border-transparent px-4 sm:px-6 py-3 sm:py-4"
         }`}
       >
@@ -155,7 +155,13 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white dark:bg-secondary-900 shadow-lg py-4 px-4 z-10 animate-fadeIn md:hidden">
+          <div
+            className={`absolute top-full left-0 right-0 ${
+              scrolled
+                ? "bg-white/95 dark:bg-secondary-900/95 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl border border-secondary-100 dark:border-secondary-800/50"
+                : "bg-white dark:bg-secondary-900 shadow-lg"
+            } py-4 px-5 z-10 animate-fadeIn md:hidden`}
+          >
             {isFlashcardPage && (
               <div className="flex flex-col gap-4 mb-4">
                 <div className="flex items-center justify-between">
@@ -193,7 +199,7 @@ const Header: React.FC<HeaderProps> = ({
               >
                 <Link
                   to="/settings"
-                  className="flex items-center gap-3 py-3 px-2 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-lg transition-colors focus:outline-none focus:ring-0 outline-none border-0 !outline-none !border-none no-outline"
+                  className="flex items-center gap-3 py-3 px-2 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-lg transition-colors focus:outline-none focus:ring-0 border-0 !outline-none !border-none no-outline"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Settings2 className="w-5 h-5 text-secondary-600 dark:text-secondary-300" />
