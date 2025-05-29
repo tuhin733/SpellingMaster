@@ -61,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={() => window.history.back()}
                 aria-label="Back"
-                className="inline-flex p-2 rounded-full bg-blue-50 hover:bg-blue-100 shadow-sm hover:shadow-md active:bg-blue-200 text-blue-600 transition-all duration-300 transform hover:-translate-x-1 focus:outline-none focus:ring-2 focus:ring-blue-500/50 outline-none border-0 !outline-none !border-none no-outline dark:bg-blue-900/20 dark:hover:bg-blue-800/30 dark:shadow-blue-900/50 dark:active:bg-blue-700/40 dark:text-blue-400"
+                className="inline-flex p-2 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:-translate-x-1 focus:outline-none focus:ring-2 focus:ring-primary-500/50 border-0 dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
               >
                 <ArrowLeft className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
               </button>
@@ -113,7 +113,7 @@ const Header: React.FC<HeaderProps> = ({
               <Link
                 to="/statistics"
                 aria-label="Statistics"
-                className="inline-flex p-2 rounded-full bg-blue-50 hover:bg-blue-100 shadow-sm hover:shadow-md active:bg-blue-200 text-blue-600 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-sky-400/50 outline-none border-0 !outline-none !border-none no-outline group dark:bg-sky-900/10 dark:hover:bg-sky-800/20 dark:shadow-sky-900/30 dark:active:bg-sky-700/30 dark:text-sky-300"
+                className="inline-flex p-2 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary-400/50 border-0 group dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
               >
                 <PieChart className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
               </Link>
@@ -124,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({
               <Link
                 to="/settings"
                 aria-label="Settings"
-                className="inline-flex p-2 rounded-full bg-rose-50 hover:bg-rose-200 shadow-sm hover:shadow-md active:bg-rose-200 text-rose-500 transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-rose-400/50 outline-none border-0 !outline-none !border-none no-outline group dark:bg-rose-900/10 dark:hover:bg-rose-800/20 dark:shadow-rose-900/30 dark:active:bg-rose-700/30 dark:text-rose-300"
+                className="inline-flex p-2 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-primary-400/50 border-0 group dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
               >
                 <Settings className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
               </Link>
@@ -139,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({
             position="bottom"
           >
             <button
-              className="inline-flex p-2 rounded-full bg-amber-50 hover:bg-amber-100 shadow-sm hover:shadow-md active:bg-amber-200 text-amber-600 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-500/50 outline-none border-0 !outline-none !border-none no-outline dark:bg-amber-900/20 dark:hover:bg-amber-800/30 dark:shadow-amber-900/50 dark:active:bg-amber-700/40 dark:text-amber-400"
+              className="inline-flex p-2 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500/50 border-0 dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}
