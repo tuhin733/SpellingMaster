@@ -439,6 +439,30 @@ const SettingsPage: React.FC = () => {
                   }
                 />
               </div>
+
+              <div className="border-t border-gray-100 dark:border-gray-700/30 pt-4">
+                <ToggleSwitch
+                  isOn={settings.enableAutoSpeak === true}
+                  onToggle={() =>
+                    updateSettings({
+                      enableAutoSpeak: !settings.enableAutoSpeak,
+                    })
+                  }
+                  onIcon={
+                    <Volume2 className="w-3 h-3 text-blue-500 absolute top-1 left-1" />
+                  }
+                  offIcon={
+                    <VolumeX className="w-3 h-3 text-gray-500 absolute top-1 left-1" />
+                  }
+                  label="Auto-Speak"
+                  description="Automatically speak words when shown"
+                  tooltip={
+                    settings.enableAutoSpeak
+                      ? "Disable auto-speak"
+                      : "Enable auto-speak"
+                  }
+                />
+              </div>
             </div>
           </SettingSection>
 

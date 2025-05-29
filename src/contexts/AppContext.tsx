@@ -11,10 +11,21 @@ import { preloadSoundEffects } from "../utils/sound";
 import * as localSettings from "../utils/localSettings";
 import { useWordlists } from "../hooks";
 
+interface AppSettings {
+  enableSound: boolean;
+  enableAutoSpeak: boolean;
+  fontSize: string;
+  theme: string;
+  studySessionSettings: {
+    wordsPerSession: number;
+    timeLimit: number;
+  };
+}
+
 interface AppContextType {
   wordlists: Wordlist[];
   userProgress: Record<string, UserProgress>;
-  settings: UserSettings;
+  settings: AppSettings;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   updateProgress: (
@@ -23,7 +34,7 @@ interface AppContextType {
     masteredWords: string[],
     scorePercent?: number
   ) => Promise<void>;
-  updateSettings: (settings: Partial<UserSettings>) => void;
+  updateSettings: (settings: Partial<AppSettings>) => void;
   clearProgress: (language?: string) => Promise<void>;
   clearAllData: () => Promise<void>;
   refreshWordlists: () => Promise<void>;
@@ -53,10 +64,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userProgress, setUserProgress] = useState<
     Record<string, UserProgress>
   >({});
-  // Load settings using the new utility
-  const [settings, setSettings] = useState<UserSettings>(
-    localSettings.loadSettings()
-  );
+  const [settings, setSettings] = useState<AppSettings>(() => {
+    const savedSettings = localStorage.getItem("appSettings");
+    return savedSettings
+      ? JSON.parse(savedSettings)
+      : {
+          enableSound: true,
+          enableAutoSpeak: false,
+          fontSize: "medium",
+          theme: "light",
+          studySessionSettings: {
+            wordsPerSession: 20,
+            timeLimit: 0,
+          },
+        };
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [dbInitialized, setDbInitialized] = useState<boolean>(false);
 
@@ -114,7 +136,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Persist settings to localStorage when they change
   useEffect(() => {
-    localSettings.saveSettings(settings);
+    localStorage.setItem("appSettings", JSON.stringify(settings));
 
     // Handle font size
     const root = document.documentElement;
@@ -210,83 +232,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const updateSettings = (newSettings: Partial<UserSettings>) => {
-    // Handle sound setting explicitly to ensure proper boolean type
-    let soundEnabled: boolean | undefined = undefined;
-
-    if (newSettings.hasOwnProperty("enableSound")) {
-      // Force strict boolean values - check for explicit false first
-      if (newSettings.enableSound === false) {
-        soundEnabled = false;
-      } else {
-        soundEnabled = true;
-      }
-    }
-
-    setSettings((prev: UserSettings) => {
-      // Safely copy settings without spreading the potentially problematic newSettings
-      const updatedSettings: UserSettings = {
-        fontSize: prev.fontSize,
-        theme: prev.theme,
-        enableSound: prev.enableSound,
-        studySessionSettings: {
-          ...(prev.studySessionSettings || {
-            wordsPerSession: 20,
-            timeLimit: 0,
-          }),
-        },
-      };
-
-      // Explicitly handle each field with type checking
-      if (newSettings.fontSize) {
-        // Ensure fontSize is one of the allowed values
-        if (["small", "medium", "large"].includes(newSettings.fontSize)) {
-          updatedSettings.fontSize = newSettings.fontSize;
-        }
-      }
-
-      if (newSettings.theme) {
-        // Ensure theme is one of the allowed values
-        if (["light", "dark"].includes(newSettings.theme)) {
-          updatedSettings.theme = newSettings.theme as "light" | "dark";
-        }
-      }
-
-      // Override with our explicitly verified value if we have one
-      if (soundEnabled !== undefined) {
-        updatedSettings.enableSound = soundEnabled;
-      }
-
-      // Handle studySessionSettings if provided
-      if (newSettings.studySessionSettings) {
-        updatedSettings.studySessionSettings = {
-          ...updatedSettings.studySessionSettings,
-          ...newSettings.studySessionSettings,
-        };
-
-        // Validate wordsPerSession
-        if (
-          typeof updatedSettings.studySessionSettings.wordsPerSession ===
-          "number"
-        ) {
-          updatedSettings.studySessionSettings.wordsPerSession = Math.min(
-            Math.max(5, updatedSettings.studySessionSettings.wordsPerSession),
-            100
-          );
-        }
-
-        // Validate timeLimit
-        if (
-          typeof updatedSettings.studySessionSettings.timeLimit === "number"
-        ) {
-          updatedSettings.studySessionSettings.timeLimit = Math.max(
-            0,
-            updatedSettings.studySessionSettings.timeLimit
-          );
-        }
-      }
-
-      return updatedSettings;
+  const updateSettings = (newSettings: Partial<AppSettings>) => {
+    setSettings((prev) => {
+      const updated = { ...prev, ...newSettings };
+      localStorage.setItem("appSettings", JSON.stringify(updated));
+      return updated;
     });
   };
 
@@ -307,7 +257,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const clearAllData = async () => {
     await db.resetDatabase();
     setUserProgress({});
-    setSettings(initialSettings);
+    setSettings({
+      enableSound: true,
+      enableAutoSpeak: false,
+      fontSize: "medium",
+      theme: "light",
+      studySessionSettings: {
+        wordsPerSession: 20,
+        timeLimit: 0,
+      },
+    });
   };
 
   // Add refreshWordlists method to reload wordlists

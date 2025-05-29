@@ -24,10 +24,11 @@ const Flashcard: React.FC<FlashcardProps> = ({
   language = "en-US",
   languageCode,
   onResult,
-  autoSpeak = true,
+  autoSpeak: propAutoSpeak = true,
   showInstructions = true,
 }) => {
   const { settings } = useApp();
+  const autoSpeak = propAutoSpeak !== false ? settings.enableAutoSpeak : false;
   const [isFlipped, setIsFlipped] = useState(false);
   const [userInput, setUserInput] = useState<string[]>([]);
   const [result, setResult] = useState<"correct" | "incorrect" | null>(null);
