@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useApp } from "../contexts/AppContext";
 import Header from "../components/Header";
-import SearchBar from "../components/SearchBar";
+import SearchBar, { FilterOption } from "../components/SearchBar";
 import LanguageCard from "../components/LanguageCard";
 import Preloader from "../components/Preloader";
 import { Book, Search, Sparkles } from "lucide-react";
@@ -11,11 +11,36 @@ import { Wordlist } from "../types";
 const HomePage: React.FC = () => {
   const { wordlists, isLoading, refreshWordlists } = useApp();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("all");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
-  const filteredWordlists = wordlists.filter((wordlist) =>
-    wordlist.language.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filterOptions: FilterOption[] = [
+    { label: "All Languages", value: "all" },
+    { label: "Recently Added", value: "recent" },
+    { label: "Most Words", value: "most-words" },
+    { label: "Least Words", value: "least-words" },
+    { label: "Custom Wordlists", value: "custom" },
+  ];
+
+  const filteredWordlists = wordlists
+    .filter((wordlist) => {
+      if (selectedFilter === "custom" && wordlist.source !== "user") {
+        return false;
+      }
+      return wordlist.language.toLowerCase().includes(searchTerm.toLowerCase());
+    })
+    .sort((a, b) => {
+      switch (selectedFilter) {
+        case "recent":
+          return (b.timestamp || 0) - (a.timestamp || 0);
+        case "most-words":
+          return b.words.length - a.words.length;
+        case "least-words":
+          return a.words.length - b.words.length;
+        default:
+          return a.language.localeCompare(b.language);
+      }
+    });
 
   const handleUploadSuccess = async (wordlist: Wordlist) => {
     // First refresh the wordlists to include the newly added wordlist
@@ -64,11 +89,14 @@ const HomePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Search Bar and Upload Button */}
-          <div className="flex justify-between mb-4 sm:mb-5 flex-col sm:flex-row gap-3">
-            <div className="flex-grow">
-              <SearchBar onSearch={setSearchTerm} />
-            </div>
+          {/* Search Bar with integrated filter */}
+          <div className="mb-4 sm:mb-5">
+            <SearchBar
+              onSearch={setSearchTerm}
+              onFilterChange={setSelectedFilter}
+              filterOptions={filterOptions}
+              selectedFilter={selectedFilter}
+            />
           </div>
 
           {/* Section Header */}
