@@ -160,14 +160,12 @@ const ResultsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col transition-colors dark:bg-gradient-to-b dark:from-secondary-900 dark:to-secondary-950">
-      <Header showBack title={`Level ${level} Results`} showSettings={false} />
-
       <Confetti
         show={showConfetti}
         duration={percentage === 100 ? 8000 : 6000}
       />
 
-      <main className="flex-1 container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-3xl flex flex-col main-content">
+      <main className="flex-1 container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-3xl flex flex-col">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
