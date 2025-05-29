@@ -5,6 +5,7 @@ import { validateWordInput, isCorrectSpelling } from "../utils/validation";
 import { playSound } from "../utils/sound";
 import { useApp } from "../contexts/AppContext";
 import { TranslatedWord } from "./TranslatedWord";
+import Tooltip from "./Tooltip";
 
 interface FlashcardProps {
   word: string;
@@ -28,14 +29,14 @@ const Flashcard: React.FC<FlashcardProps> = ({
 }) => {
   const { settings } = useApp();
   const [isFlipped, setIsFlipped] = useState(false);
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useState<string[]>([]);
   const [result, setResult] = useState<"correct" | "incorrect" | null>(null);
   const [isCardAnimating, setIsCardAnimating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSpeechSupported, setIsSpeechSupported] = useState(false);
   const [isCheckingSupport, setIsCheckingSupport] = useState(true);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Check if speech synthesis is supported for this language
   useEffect(() => {
@@ -70,16 +71,17 @@ const Flashcard: React.FC<FlashcardProps> = ({
   // Reset state when word changes
   useEffect(() => {
     setIsFlipped(false);
-    setUserInput("");
+    setUserInput(Array(word.length).fill(""));
     setResult(null);
     setIsCardAnimating(false);
     setError(null);
+    inputRefs.current = Array(word.length).fill(null);
   }, [word]);
 
-  // Focus input when card is flipped
+  // Focus first input when card is flipped
   useEffect(() => {
-    if (isFlipped && inputRef.current) {
-      inputRef.current.focus();
+    if (isFlipped && inputRefs.current[0]) {
+      inputRefs.current[0]?.focus();
     }
   }, [isFlipped]);
 
@@ -131,23 +133,57 @@ const Flashcard: React.FC<FlashcardProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleInputChange = (index: number, value: string) => {
+    if (value.length > 1) return; // Only allow single character
 
-    const validation = validateWordInput(userInput);
-    if (!validation.isValid) {
-      setError(validation.error);
-      return;
+    const newInput = [...userInput];
+    newInput[index] = value;
+    setUserInput(newInput);
+    setError(null);
+
+    // Auto-focus next input if character entered
+    if (value && index < word.length - 1) {
+      inputRefs.current[index + 1]?.focus();
     }
-
-    const correct = isCorrectSpelling(userInput, word);
-    setResult(correct ? "correct" : "incorrect");
-
-    // Play the appropriate sound effect based on the result
-    playSound(correct ? "success" : "error", settings.enableSound);
-
-    onResult(correct);
   };
+
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const inputWord = userInput.join("");
+      const validation = validateWordInput(inputWord);
+      if (!validation.isValid) {
+        setError(validation.error);
+        return;
+      }
+      const correct = isCorrectSpelling(inputWord, word);
+      setResult(correct ? "correct" : "incorrect");
+      playSound(correct ? "success" : "error", settings.enableSound);
+      onResult(correct);
+    } else if (e.key === "Backspace" && !userInput[index] && index > 0) {
+      // Move to previous input on backspace if current input is empty
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData("text").slice(0, word.length);
+    const newInput = Array(word.length).fill("");
+    pastedText.split("").forEach((char, index) => {
+      if (index < word.length) {
+        newInput[index] = char;
+      }
+    });
+    setUserInput(newInput);
+    setError(null);
+  };
+
+  // Helper function to check if it's a mobile screen
+  const isMobile = () => window.innerWidth < 640;
 
   return (
     <div className="w-full max-w-md mx-auto px-2 sm:px-0">
@@ -190,13 +226,17 @@ const Flashcard: React.FC<FlashcardProps> = ({
                   </button>
                 ) : null}
                 <div className="mt-4 sm:mt-6 flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                  <kbd className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 border border-gray-300 rounded text-[10px] sm:text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
-                    Enter
-                  </kbd>
+                  <Tooltip content="Press Enter key to flip the card" position="top">
+                    <kbd className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 border border-gray-300 rounded text-[10px] sm:text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                      Enter
+                    </kbd>
+                  </Tooltip>
                   <span>or</span>
-                  <kbd className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 border border-gray-300 rounded text-[10px] sm:text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
-                    Space
-                  </kbd>
+                  <Tooltip content="Press Space key to flip the card" position="top">
+                    <kbd className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 border border-gray-300 rounded text-[10px] sm:text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                      Space
+                    </kbd>
+                  </Tooltip>
                   <span>to Flip</span>
                 </div>
               </div>
@@ -206,7 +246,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
               {showInstructions && result === null && (
                 <div className="text-center mb-3 sm:mb-4">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100">
-                    Type the word you heard
+                  Enter the spelling
                   </h3>
                 </div>
               )}
@@ -224,41 +264,74 @@ const Flashcard: React.FC<FlashcardProps> = ({
                   </h3>
                 </div>
               )}
-
               {result === null ? (
-                <form onSubmit={handleSubmit} className="flex flex-col">
-                  <div className="relative">
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={userInput}
-                      onChange={(e) => {
-                        setUserInput(e.target.value);
-                        setError(null);
-                      }}
-                      placeholder="Enter spelling..."
-                      className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-center text-base sm:text-lg font-semibold border-t-0 border-x-0 border-b-2 ${
-                        error
-                          ? "border-red-500"
-                          : "border-secondary-200 focus:border-primary-500 dark:border-secondary-600"
-                      } outline-none dark:bg-secondary-700 dark:text-secondary-100 dark:placeholder-secondary-400 transition-all`}
-                      autoComplete="off"
-                      autoCorrect="off"
-                      spellCheck="false"
-                    />
+                <form
+                  onSubmit={(e) => e.preventDefault()}
+                  className="flex flex-col h-full justify-between"
+                >
+                  <div className="flex flex-col items-center justify-center flex-grow">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="flex gap-1.5 sm:gap-2 w-full justify-center">
+                        {Array.from({ length: word.length }).map((_, index) => (
+                          <input
+                            key={index}
+                            ref={(el) => (inputRefs.current[index] = el)}
+                            type="text"
+                            maxLength={1}
+                            value={userInput[index] || ""}
+                            onChange={(e) =>
+                              handleInputChange(index, e.target.value)
+                            }
+                            onKeyDown={(e) => handleKeyDown(index, e)}
+                            onPaste={handlePaste}
+                            className={`h-10 sm:h-12 text-center text-lg sm:text-xl font-semibold border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 ${
+                              error
+                                ? "border-red-500 dark:border-red-500"
+                                : "border-secondary-200 dark:border-secondary-600"
+                            } transition-all`}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            spellCheck="false"
+                            style={{
+                              caretColor: "transparent", // Hide blinking cursor
+                              width: `calc((100% - ${(word.length - 1) * (isMobile() ? 0.375 : 0.5)}rem) / ${word.length})` // Calculate width based on container, gaps, and number of inputs
+                            }}
+                          />
+                        ))}
+                      </div>
+                      {!isCheckingSupport && isSpeechSupported ? (
+                        <button
+                          type="button"
+                          onClick={handleSpeak}
+                          disabled={!isSpeechSupported || isSpeaking}
+                          className={`bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full p-2 sm:p-3 transition-all dark:bg-blue-900/40 dark:hover:bg-blue-900/60 dark:text-blue-300 ${
+                            isSpeaking ? "animate-pulse" : ""
+                          } ${
+                            !isSpeechSupported
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
+                          aria-label="Listen to word pronunciation"
+                        >
+                          <Volume2 className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </button>
+                      ) : null}
+                    </div>
+                    {error && (
+                      <p className="mt-3 text-center text-xs sm:text-sm text-red-600 animate-pulse dark:text-red-400">
+                        {error}
+                      </p>
+                    )}
                   </div>
-                  {error && (
-                    <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-red-600 animate-pulse dark:text-red-400">
-                      {error}
-                    </p>
-                  )}
-
-                  <button
-                    type="submit"
-                    className="mt-3 sm:mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 sm:py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-500 dark:focus:ring-offset-secondary-800"
-                  >
-                    Check
-                  </button>
+                  <div className="text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-4">
+                    Press{" "}
+                    <Tooltip content="Press Enter key to check your spelling" position="top">
+                      <kbd className="px-1 py-0.5 bg-gray-100 border border-gray-300 rounded text-[10px] sm:text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                        Enter
+                      </kbd>
+                    </Tooltip>{" "}
+                    to check spelling
+                  </div>
                 </form>
               ) : (
                 <div className="text-center animate-fade-in">
