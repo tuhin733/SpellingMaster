@@ -38,7 +38,7 @@ const HomePage: React.FC = () => {
         case "least-words":
           return a.words.length - b.words.length;
         default:
-          return a.language.localeCompare(b.language);
+          return 0;
       }
     });
 
