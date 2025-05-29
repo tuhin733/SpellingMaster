@@ -226,13 +226,19 @@ const Flashcard: React.FC<FlashcardProps> = ({
                   </button>
                 ) : null}
                 <div className="mt-4 sm:mt-6 flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                  <Tooltip content="Press Enter key to flip the card" position="top">
+                  <Tooltip
+                    content="Press Enter key to flip the card"
+                    position="top"
+                  >
                     <kbd className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 border border-gray-300 rounded text-[10px] sm:text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
                       Enter
                     </kbd>
                   </Tooltip>
                   <span>or</span>
-                  <Tooltip content="Press Space key to flip the card" position="top">
+                  <Tooltip
+                    content="Press Space key to flip the card"
+                    position="top"
+                  >
                     <kbd className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 border border-gray-300 rounded text-[10px] sm:text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
                       Space
                     </kbd>
@@ -246,7 +252,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
               {showInstructions && result === null && (
                 <div className="text-center mb-3 sm:mb-4">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100">
-                  Enter the spelling
+                    Enter the spelling
                   </h3>
                 </div>
               )}
@@ -294,7 +300,11 @@ const Flashcard: React.FC<FlashcardProps> = ({
                             spellCheck="false"
                             style={{
                               caretColor: "transparent", // Hide blinking cursor
-                              width: `calc((100% - ${(word.length - 1) * (isMobile() ? 0.375 : 0.5)}rem) / ${word.length})` // Calculate width based on container, gaps, and number of inputs
+                              width: `calc((100% - ${
+                                (word.length - 1) * (isMobile() ? 0.375 : 0.5)
+                              }rem) / ${word.length})`, // Calculate width based on container, gaps, and number of inputs
+                              maxWidth: word.length <= 4 ? "3rem" : "none", // Limit width for short words
+                              minWidth: "2rem", // Ensure minimum width for very short words
                             }}
                           />
                         ))}
@@ -325,7 +335,10 @@ const Flashcard: React.FC<FlashcardProps> = ({
                   </div>
                   <div className="text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-4">
                     Press{" "}
-                    <Tooltip content="Press Enter key to check your spelling" position="top">
+                    <Tooltip
+                      content="Press Enter key to check your spelling"
+                      position="top"
+                    >
                       <kbd className="px-1 py-0.5 bg-gray-100 border border-gray-300 rounded text-[10px] sm:text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
                         Enter
                       </kbd>
