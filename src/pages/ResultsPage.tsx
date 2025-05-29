@@ -167,7 +167,7 @@ const ResultsPage: React.FC = () => {
         duration={percentage === 100 ? 8000 : 6000}
       />
 
-      <main className="flex-1 container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-3xl flex flex-col">
+      <main className="flex-1 container mx-auto px-3 sm:px-4 py-3 sm:py-4 max-w-3xl flex flex-col main-content">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}

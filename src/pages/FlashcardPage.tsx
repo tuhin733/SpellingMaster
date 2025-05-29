@@ -363,7 +363,7 @@ const FlashcardPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col transition-colors dark:bg-secondary-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col transition-colors dark:from-secondary-900 dark:to-secondary-950">
       <Header
         showBack
         title={`Level ${level} - ${wordlist?.language || "Loading..."}`}
@@ -380,7 +380,7 @@ const FlashcardPage: React.FC = () => {
         />
       )}
 
-      <main className="flex-1 container-content flex flex-col">
+      <main className="flex-1 container-content flex flex-col main-content">
         {isRetrying && (
           <AlertMessage
             type="warning"

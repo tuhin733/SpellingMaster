@@ -47,7 +47,7 @@ const HelpCenterPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col transition-colors duration-300 dark:from-secondary-900 dark:to-secondary-950">
       <Header showBack title="Help Center" />
 
-      <main className="flex-1 container mx-auto p-5 max-w-3xl pb-12">
+      <main className="flex-1 container mx-auto p-5 max-w-3xl pb-12 main-content">
         {/* Help Banner */}
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 mb-8 border border-blue-100 dark:border-blue-800/40">
           <div className="flex items-start space-x-4">

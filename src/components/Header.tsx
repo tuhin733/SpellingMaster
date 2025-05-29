@@ -44,15 +44,15 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <div
-      className={`sticky top-0 z-20 flex justify-center w-full transition-all duration-300 ${
-        scrolled ? "px-4 sm:px-6 py-3" : "px-4 sm:px-6 py-0"
+      className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-300 ${
+        scrolled ? "pt-4 pb-2" : "pt-6 pb-4"
       }`}
     >
       <header
         className={`flex items-center justify-between transition-all duration-300 backdrop-blur-lg ${
           scrolled
             ? "w-[95%] sm:w-[90%] md:w-[85%] rounded-full shadow-lg bg-white/95 dark:bg-secondary-900/95 dark:border dark:border-secondary-800 px-4 sm:px-6 py-2"
-            : "w-full rounded-none bg-transparent dark:bg-transparent dark:border dark:border-transparent py-3 sm:py-4"
+            : "w-full rounded-none bg-transparent dark:bg-transparent dark:border dark:border-transparent px-4 sm:px-6 py-3 sm:py-4"
         }`}
       >
         <div className="flex items-center gap-3">

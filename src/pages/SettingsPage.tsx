@@ -348,8 +348,7 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col transition-colors duration-300 dark:from-secondary-900 dark:to-secondary-950">
       <Header showBack title="Settings" showSettings={false} />
-
-      <main className="flex-1 container mx-auto p-5 max-w-6xl pb-12">
+      <main className="flex-1 container mx-auto p-5 max-w-6xl pb-12 main-content">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <SettingSection
             title="Display Preferences"

@@ -55,8 +55,7 @@ const LevelsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col transition-colors dark:bg-secondary-900">
       <Header showBack title={`${language} Levels`} />
-
-      <main className="flex-1 container-content overflow-x-hidden">
+      <main className="flex-1 container-content main-content">
         <div className="mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4">
             <div>

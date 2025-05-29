@@ -468,8 +468,7 @@ const StatisticsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col dark:from-secondary-900 dark:to-secondary-950">
       <Header showBack title="Performance Statistics" />
-
-      <main className="flex-1 container mx-auto px-4 py-5 max-w-4xl">
+      <main className="flex-1 container mx-auto px-4 py-5 max-w-4xl main-content">
         <motion.div
           variants={container}
           initial="hidden"

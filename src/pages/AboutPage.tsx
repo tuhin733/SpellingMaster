@@ -7,7 +7,7 @@ const AboutPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col transition-colors duration-300 dark:from-secondary-900 dark:to-secondary-950">
       <Header showBack title="About" />
 
-      <main className="flex-1 container mx-auto p-5 max-w-3xl pb-12">
+      <main className="flex-1 container mx-auto p-5 max-w-3xl pb-12 main-content">
         <div className="bg-white dark:bg-secondary-800 rounded-xl shadow-md p-6 md:p-8">
           {/* App Info Section */}
           <div className="text-center mb-8">
