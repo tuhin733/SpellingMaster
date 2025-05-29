@@ -124,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({
               <Link
                 to="/settings"
                 aria-label="Settings"
-                className="inline-flex p-2 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-primary-400/50 border-0 group dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
+                className="inline-flex p-2 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-400/50 border-0 group dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
               >
                 <Settings className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
               </Link>
