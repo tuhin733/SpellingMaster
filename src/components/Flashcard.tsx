@@ -30,14 +30,14 @@ const Flashcard: React.FC<FlashcardProps> = ({
   const { settings } = useApp();
   const autoSpeak = propAutoSpeak !== false ? settings.enableAutoSpeak : false;
   const [isFlipped, setIsFlipped] = useState(false);
-  const [userInput, setUserInput] = useState<string[]>([]);
+  const [userInput, setUserInput] = useState("");
   const [result, setResult] = useState<"correct" | "incorrect" | null>(null);
   const [isCardAnimating, setIsCardAnimating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSpeechSupported, setIsSpeechSupported] = useState(false);
   const [isCheckingSupport, setIsCheckingSupport] = useState(true);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Check if speech synthesis is supported for this language
   useEffect(() => {
@@ -72,17 +72,16 @@ const Flashcard: React.FC<FlashcardProps> = ({
   // Reset state when word changes
   useEffect(() => {
     setIsFlipped(false);
-    setUserInput(Array(word.length).fill(""));
+    setUserInput("");
     setResult(null);
     setIsCardAnimating(false);
     setError(null);
-    inputRefs.current = Array(word.length).fill(null);
   }, [word]);
 
-  // Focus first input when card is flipped
+  // Focus input when card is flipped
   useEffect(() => {
-    if (isFlipped && inputRefs.current[0]) {
-      inputRefs.current[0]?.focus();
+    if (isFlipped && inputRef.current) {
+      inputRef.current.focus();
     }
   }, [isFlipped]);
 
@@ -134,53 +133,25 @@ const Flashcard: React.FC<FlashcardProps> = ({
     }
   };
 
-  const handleInputChange = (index: number, value: string) => {
-    if (value.length > 1) return; // Only allow single character
-
-    const newInput = [...userInput];
-    newInput[index] = value;
-    setUserInput(newInput);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUserInput(value);
     setError(null);
-
-    // Auto-focus next input if character entered
-    if (value && index < word.length - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
   };
 
-  const handleKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      const inputWord = userInput.join("");
-      const validation = validateWordInput(inputWord);
+      const validation = validateWordInput(userInput);
       if (!validation.isValid) {
         setError(validation.error);
         return;
       }
-      const correct = isCorrectSpelling(inputWord, word);
+      const correct = isCorrectSpelling(userInput, word);
       setResult(correct ? "correct" : "incorrect");
       playSound(correct ? "success" : "error", settings.enableSound);
       onResult(correct);
-    } else if (e.key === "Backspace" && !userInput[index] && index > 0) {
-      // Move to previous input on backspace if current input is empty
-      inputRefs.current[index - 1]?.focus();
     }
-  };
-
-  const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const pastedText = e.clipboardData.getData("text").slice(0, word.length);
-    const newInput = Array(word.length).fill("");
-    pastedText.split("").forEach((char, index) => {
-      if (index < word.length) {
-        newInput[index] = char;
-      }
-    });
-    setUserInput(newInput);
-    setError(null);
   };
 
   // Helper function to check if it's a mobile screen
@@ -277,47 +248,29 @@ const Flashcard: React.FC<FlashcardProps> = ({
                   className="flex flex-col h-full justify-between"
                 >
                   <div className="flex flex-col items-center justify-center flex-grow">
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <div className="flex gap-1.5 sm:gap-2 w-full justify-center">
-                        {Array.from({ length: word.length }).map((_, index) => (
-                          <input
-                            key={index}
-                            ref={(el) => (inputRefs.current[index] = el)}
-                            type="text"
-                            maxLength={1}
-                            value={userInput[index] || ""}
-                            onChange={(e) =>
-                              handleInputChange(index, e.target.value)
-                            }
-                            onKeyDown={(e) => handleKeyDown(index, e)}
-                            onPaste={handlePaste}
-                            className={`h-10 sm:h-12 text-center text-lg sm:text-xl font-semibold border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 ${
-                              error
-                                ? "border-red-500 dark:border-red-500"
-                                : "border-secondary-200 dark:border-secondary-600"
-                            } transition-all`}
-                            autoComplete="off"
-                            autoCorrect="off"
-                            spellCheck="false"
-                            style={{
-                              caretColor: "transparent", // Hide blinking cursor
-                              width: `calc((100% - ${
-                                (word.length - 1) * (isMobile() ? 0.375 : 0.5)
-                              }rem) / ${word.length})`, // Calculate width based on container, gaps, and number of inputs
-                              maxWidth: word.length <= 4 ? "3rem" : "none", // Limit width for short words
-                              minWidth: "2rem", // Ensure minimum width for very short words
-                            }}
-                          />
-                        ))}
-                      </div>
+                    <div className="flex items-center gap-2 w-full max-w-sm">
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={userInput}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                        className={`w-full h-12 text-center text-lg sm:text-xl font-semibold bg-transparent focus:outline-none transition-all px-4 ${
+                          error
+                            ? "text-red-500 dark:text-red-400"
+                            : "text-gray-800 dark:text-gray-100"
+                        }`}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        spellCheck="false"
+                        placeholder="Type here..."
+                      />
                       {!isCheckingSupport && isSpeechSupported ? (
                         <button
                           type="button"
                           onClick={handleSpeak}
                           disabled={!isSpeechSupported || isSpeaking}
-                          className={`bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full p-2 sm:p-3 transition-all dark:bg-blue-900/40 dark:hover:bg-blue-900/60 dark:text-blue-300 ${
-                            isSpeaking ? "animate-pulse" : ""
-                          } ${
+                          className={`text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200 ${
                             !isSpeechSupported
                               ? "opacity-50 cursor-not-allowed"
                               : ""
