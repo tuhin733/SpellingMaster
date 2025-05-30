@@ -1,0 +1,41 @@
+.cursor {
+  position: relative;
+}
+
+.cursor::after {
+  content: "";
+  width: 2px;
+  height: 24px;
+  background: currentColor;
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.input::placeholder {
+  color: theme("colors.blue.600");
+}
+
+.input::-webkit-input-placeholder {
+  color: theme("colors.blue.600");
+}
+
+:global(.dark) .input::placeholder {
+  color: theme("colors.blue.400");
+}
+
+:global(.dark) .input::-webkit-input-placeholder {
+  color: theme("colors.blue.400");
+}

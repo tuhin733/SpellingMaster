@@ -6,6 +6,8 @@ import { playSound } from "../utils/sound";
 import { useApp } from "../contexts/AppContext";
 import { TranslatedWord } from "./TranslatedWord";
 import Tooltip from "./Tooltip";
+import { useTypewriter } from "../hooks/useTypewriter";
+import styles from "../styles/typewriter.module.css";
 
 interface FlashcardProps {
   word: string;
@@ -38,6 +40,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
   const [isSpeechSupported, setIsSpeechSupported] = useState(false);
   const [isCheckingSupport, setIsCheckingSupport] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+  const placeholderText = useTypewriter("Type here...");
 
   // Check if speech synthesis is supported for this language
   useEffect(() => {
@@ -257,7 +260,10 @@ const Flashcard: React.FC<FlashcardProps> = ({
                         value={userInput}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
-                        className={`w-full h-14 text-center text-lg sm:text-xl font-semibold bg-transparent outline-none border-none caret-transparent ${
+                        placeholder={placeholderText}
+                        className={`${styles.cursor} ${
+                          styles.input
+                        } w-full h-14 text-center caret-transparent text-lg sm:text-xl font-semibold bg-transparent outline-none border-none ${
                           error
                             ? "text-red-500 dark:text-red-400"
                             : "text-gray-800 dark:text-gray-100"
@@ -265,7 +271,6 @@ const Flashcard: React.FC<FlashcardProps> = ({
                         autoComplete="off"
                         autoCorrect="off"
                         spellCheck="false"
-                        placeholder="Type here..."
                         aria-label="Spelling input"
                         aria-invalid={error ? "true" : "false"}
                       />
