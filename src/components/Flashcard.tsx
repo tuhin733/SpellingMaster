@@ -257,7 +257,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
                         value={userInput}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
-                        className={`w-full h-14 text-center text-lg sm:text-xl font-semibold bg-transparent outline-none border-none caret-blue-500 dark:caret-blue-400 ${
+                        className={`w-full h-14 text-center text-lg sm:text-xl font-semibold bg-transparent outline-none border-none caret-transparent ${
                           error
                             ? "text-red-500 dark:text-red-400"
                             : "text-gray-800 dark:text-gray-100"
