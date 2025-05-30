@@ -246,54 +246,69 @@ const Flashcard: React.FC<FlashcardProps> = ({
                 <form
                   onSubmit={(e) => e.preventDefault()}
                   className="flex flex-col h-full justify-between"
+                  role="form"
+                  aria-label="Spelling check form"
                 >
                   <div className="flex flex-col items-center justify-center flex-grow">
-                    <div className="flex items-center gap-2 w-full max-w-sm">
+                    <div className="relative flex items-center gap-2 w-full max-w-sm">
                       <input
                         ref={inputRef}
                         type="text"
                         value={userInput}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
-                        className={`w-full h-12 text-center text-lg sm:text-xl font-semibold bg-transparent focus:outline-none transition-all px-4 ${
+                        className={`w-full h-14 text-center text-lg sm:text-xl font-semibold bg-transparent outline-none border-none caret-blue-500 dark:caret-blue-400 ${
                           error
                             ? "text-red-500 dark:text-red-400"
                             : "text-gray-800 dark:text-gray-100"
-                        }`}
+                        } transition-all duration-200 px-4`}
                         autoComplete="off"
                         autoCorrect="off"
                         spellCheck="false"
                         placeholder="Type here..."
+                        aria-label="Spelling input"
+                        aria-invalid={error ? "true" : "false"}
                       />
                       {!isCheckingSupport && isSpeechSupported ? (
                         <button
                           type="button"
                           onClick={handleSpeak}
                           disabled={!isSpeechSupported || isSpeaking}
-                          className={`text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200 ${
+                          className={`absolute right-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                            isSpeaking
+                              ? "text-blue-600 dark:text-blue-400"
+                              : "text-gray-600 dark:text-gray-400"
+                          } transition-colors duration-200 ${
                             !isSpeechSupported
                               ? "opacity-50 cursor-not-allowed"
-                              : ""
+                              : "hover:text-blue-600 dark:hover:text-blue-400"
                           }`}
                           aria-label="Listen to word pronunciation"
                         >
-                          <Volume2 className="w-5 h-5 sm:w-6 sm:h-6" />
+                          <Volume2
+                            className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                              isSpeaking ? "animate-pulse" : ""
+                            }`}
+                          />
                         </button>
                       ) : null}
                     </div>
                     {error && (
-                      <p className="mt-3 text-center text-xs sm:text-sm text-red-600 animate-pulse dark:text-red-400">
+                      <p
+                        className="mt-3 text-center text-sm text-red-600 dark:text-red-400 animate-pulse"
+                        role="alert"
+                      >
                         {error}
                       </p>
                     )}
                   </div>
-                  <div className="text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-4">
+                  <div className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
                     Press{" "}
                     <Tooltip
                       content="Press Enter key to check your spelling"
                       position="top"
                     >
-                      <kbd className="px-1 py-0.5 bg-gray-100 border border-gray-300 rounded text-[10px] sm:text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                      <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-sans font-medium text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
                         Enter
                       </kbd>
                     </Tooltip>{" "}
