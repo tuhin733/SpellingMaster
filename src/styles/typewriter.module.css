@@ -23,19 +23,3 @@
     opacity: 0;
   }
 }
-
-.input::placeholder {
-  color: theme("colors.blue.600");
-}
-
-.input::-webkit-input-placeholder {
-  color: theme("colors.blue.600");
-}
-
-:global(.dark) .input::placeholder {
-  color: theme("colors.blue.400");
-}
-
-:global(.dark) .input::-webkit-input-placeholder {
-  color: theme("colors.blue.400");
-}

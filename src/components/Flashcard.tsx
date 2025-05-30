@@ -40,7 +40,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
   const [isSpeechSupported, setIsSpeechSupported] = useState(false);
   const [isCheckingSupport, setIsCheckingSupport] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
-  const placeholderText = useTypewriter("Type here...");
+  const placeholderText = useTypewriter("Start typing...");
 
   // Check if speech synthesis is supported for this language
   useEffect(() => {
@@ -261,8 +261,8 @@ const Flashcard: React.FC<FlashcardProps> = ({
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
                         placeholder={placeholderText}
-                        className={`${styles.cursor} ${
-                          styles.input
+                        className={`${
+                          styles.cursor
                         } w-full h-14 text-center caret-transparent text-lg sm:text-xl font-semibold bg-transparent outline-none border-none ${
                           error
                             ? "text-red-500 dark:text-red-400"
