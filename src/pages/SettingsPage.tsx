@@ -168,6 +168,39 @@ const SettingsPage: React.FC = () => {
     setToast((prev) => ({ ...prev, isVisible: false }));
   };
 
+  const SectionTitle: React.FC<{
+    icon: React.ReactNode;
+    title: string;
+    description?: string;
+  }> = ({ icon, title, description }) => (
+    <div className="flex items-center space-x-3 mb-6">
+      <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+        {icon}
+      </div>
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+          {title}
+        </h2>
+        {description && (
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {description}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+
+  const SettingRow: React.FC<{
+    children: React.ReactNode;
+    className?: string;
+  }> = ({ children, className = "" }) => (
+    <div
+      className={`py-6 border-b border-gray-100 dark:border-gray-800 ${className}`}
+    >
+      {children}
+    </div>
+  );
+
   const SettingSection: React.FC<{
     title: string;
     icon: React.ReactNode;
@@ -285,16 +318,11 @@ const SettingsPage: React.FC = () => {
   const ToggleSwitch: React.FC<{
     isOn: boolean;
     onToggle: () => void;
-    onIcon: React.ReactNode;
-    offIcon: React.ReactNode;
-    activeColor?: string;
-    inactiveColor?: string;
     label: string;
     description?: string;
-    tooltip?: string;
-  }> = ({ isOn, onToggle, onIcon, offIcon, label, description, tooltip }) => (
-    <div className="flex items-center justify-between">
-      <div>
+  }> = ({ isOn, onToggle, label, description }) => (
+    <div className="flex items-start justify-between">
+      <div className="flex-1 mr-8">
         <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
           {label}
         </label>
@@ -305,71 +333,53 @@ const SettingsPage: React.FC = () => {
         )}
       </div>
 
-      <motion.button
-        whileTap={{ scale: 0.95 }}
-        onClick={onToggle}
-        className="relative w-12 h-6 rounded-full cursor-pointer"
-        role="switch"
-        aria-checked={isOn}
-        aria-label={label}
-      >
-        {/* Track background */}
-        <div
-          className={`absolute inset-0 rounded-full shadow-inner transition-colors duration-300 ${
-            isOn
-              ? "bg-gradient-to-r from-blue-400 to-blue-500 dark:from-blue-600 dark:to-blue-700"
-              : "bg-gray-200 dark:bg-gray-700"
-          }`}
-        />
-
-        {/* Thumb */}
-        <motion.div
-          initial={false}
-          animate={{
-            x: isOn ? 24 : 2,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 700,
-            damping: 30,
-          }}
-          className="absolute top-0.5 left-0 w-5 h-5 bg-white rounded-full shadow-md flex items-center justify-center"
+      <div className="flex-shrink-0">
+        <button
+          role="switch"
+          aria-checked={isOn}
+          onClick={onToggle}
+          className={`
+            relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2 dark:focus:ring-blue-500/40
+            ${
+              isOn
+                ? "bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700"
+                : "bg-gray-200 dark:bg-gray-700"
+            }
+          `}
         >
-          <div
-            className={`text-xs ${isOn ? "text-blue-500" : "text-gray-400"}`}
-          >
-            {isOn ? onIcon : offIcon}
-          </div>
-        </motion.div>
-      </motion.button>
+          <span
+            className={`
+              ${isOn ? "translate-x-6" : "translate-x-1"}
+              inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out
+            `}
+          />
+        </button>
+      </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col transition-colors duration-300 dark:from-secondary-900 dark:to-secondary-950">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-secondary-900 dark:to-secondary-950 flex flex-col">
       <Header showBack title="Settings" showSettings={false} />
-      <main className="flex-1 container mx-auto p-5 max-w-6xl pb-12 main-content">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <SettingSection
-            title="Display Preferences"
-            icon={<Settings2 className="w-5 h-5" />}
-            accentColor="blue"
-            defaultCollapsed={false}
-          >
-            <div className="space-y-4">
-              <div className="border-b border-gray-100 dark:border-gray-700/30 pb-4">
+
+      <main className="flex-1 container mx-auto px-4 py-8 max-w-3xl mt-16">
+        <div className="bg-white dark:bg-secondary-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700/50 overflow-hidden backdrop-blur-sm">
+          <div className="p-8">
+            {/* Display Preferences Section */}
+            <section className="mb-12">
+              <SectionTitle
+                icon={<Settings2 className="w-5 h-5 text-blue-500" />}
+                title="Display Preferences"
+                description="Customize your app's appearance and behavior"
+              />
+
+              <SettingRow>
                 <ToggleSwitch
                   isOn={settings.theme === "dark"}
                   onToggle={() =>
                     handleThemeChange(
                       settings.theme === "dark" ? "light" : "dark"
                     )
-                  }
-                  onIcon={
-                    <Moon className="w-3 h-3 text-blue-500 absolute top-1 left-1" />
-                  }
-                  offIcon={
-                    <Sun className="w-3 h-3 text-amber-500 absolute top-1 left-1" />
                   }
                   label="Dark Mode"
                   description={
@@ -378,69 +388,51 @@ const SettingsPage: React.FC = () => {
                       : "Better visibility in daylight"
                   }
                 />
-              </div>
+              </SettingRow>
 
-              <div>
-                {React.useMemo(
-                  () => (
-                    <>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                          Font Size
-                        </label>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3">
-                        <OptionButton
-                          label="Small"
-                          icon={<Text className="w-4 h-4" />}
-                          isActive={settings.fontSize === "small"}
-                          onClick={() => handleFontSizeChange("small")}
-                          tooltip="Small font size"
-                        />
-                        <OptionButton
-                          label="Medium"
-                          icon={<Text className="w-5 h-5" />}
-                          isActive={settings.fontSize === "medium"}
-                          onClick={() => handleFontSizeChange("medium")}
-                          tooltip="Medium font size"
-                        />
-                        <OptionButton
-                          label="Large"
-                          icon={<Text className="w-6 h-6" />}
-                          isActive={settings.fontSize === "large"}
-                          onClick={() => handleFontSizeChange("large")}
-                          tooltip="Large font size"
-                        />
-                      </div>
-                    </>
-                  ),
-                  [settings.fontSize]
-                )}
-              </div>
+              <SettingRow>
+                <div className="space-y-4">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    Font Size
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <OptionButton
+                      label="Small"
+                      icon={<Text className="w-4 h-4" />}
+                      isActive={settings.fontSize === "small"}
+                      onClick={() => handleFontSizeChange("small")}
+                      tooltip="Small font size"
+                    />
+                    <OptionButton
+                      label="Medium"
+                      icon={<Text className="w-5 h-5" />}
+                      isActive={settings.fontSize === "medium"}
+                      onClick={() => handleFontSizeChange("medium")}
+                      tooltip="Medium font size"
+                    />
+                    <OptionButton
+                      label="Large"
+                      icon={<Text className="w-6 h-6" />}
+                      isActive={settings.fontSize === "large"}
+                      onClick={() => handleFontSizeChange("large")}
+                      tooltip="Large font size"
+                    />
+                  </div>
+                </div>
+              </SettingRow>
 
-              <div className="border-t border-gray-100 dark:border-gray-700/30 pt-4">
+              <SettingRow>
                 <ToggleSwitch
                   isOn={settings.enableSound === true}
                   onToggle={() =>
                     handleSoundChange(settings.enableSound === false)
                   }
-                  onIcon={
-                    <Volume2 className="w-3 h-3 text-blue-500 absolute top-1 left-1" />
-                  }
-                  offIcon={
-                    <VolumeX className="w-3 h-3 text-gray-500 absolute top-1 left-1" />
-                  }
                   label="Sound Effects"
                   description="Play sounds for correct/incorrect answers"
-                  tooltip={
-                    settings.enableSound
-                      ? "Disable sound effects"
-                      : "Enable sound effects"
-                  }
                 />
-              </div>
+              </SettingRow>
 
-              <div className="border-t border-gray-100 dark:border-gray-700/30 pt-4">
+              <SettingRow>
                 <ToggleSwitch
                   isOn={settings.enableAutoSpeak === true}
                   onToggle={() =>
@@ -448,34 +440,22 @@ const SettingsPage: React.FC = () => {
                       enableAutoSpeak: !settings.enableAutoSpeak,
                     })
                   }
-                  onIcon={
-                    <Volume2 className="w-3 h-3 text-blue-500 absolute top-1 left-1" />
-                  }
-                  offIcon={
-                    <VolumeX className="w-3 h-3 text-gray-500 absolute top-1 left-1" />
-                  }
                   label="Auto-Speak"
                   description="Automatically speak words when shown"
-                  tooltip={
-                    settings.enableAutoSpeak
-                      ? "Disable auto-speak"
-                      : "Enable auto-speak"
-                  }
                 />
-              </div>
-            </div>
-          </SettingSection>
+              </SettingRow>
+            </section>
 
-          <SettingSection
-            title="Study Session Settings"
-            icon={<BookMarked className="w-5 h-5" />}
-            accentColor="blue"
-            defaultCollapsed={false}
-          >
-            <div className="space-y-4">
-              {/* Words Per Session Setting */}
-              <div className="border-b border-gray-100 dark:border-gray-700/30 pb-4">
-                <div>
+            {/* Study Session Settings Section */}
+            <section className="mb-12">
+              <SectionTitle
+                icon={<BookMarked className="w-5 h-5 text-blue-500" />}
+                title="Study Session Settings"
+                description="Configure your learning experience"
+              />
+
+              <SettingRow>
+                <div className="space-y-4">
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                       Words Per Session
@@ -484,9 +464,6 @@ const SettingsPage: React.FC = () => {
                       {settings.studySessionSettings?.wordsPerSession || 20}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                    Choose how many words to practice in each study session
-                  </p>
                   <div className="grid grid-cols-3 gap-3">
                     <OptionButton
                       label="5 Words"
@@ -520,11 +497,10 @@ const SettingsPage: React.FC = () => {
                     />
                   </div>
                 </div>
-              </div>
+              </SettingRow>
 
-              {/* Time Limit Setting */}
-              <div>
-                <div>
+              <SettingRow>
+                <div className="space-y-4">
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                       Time Limit
@@ -535,9 +511,6 @@ const SettingsPage: React.FC = () => {
                         : `${settings.studySessionSettings?.timeLimit}s`}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                    Set a time limit for answering each word
-                  </p>
                   <div className="grid grid-cols-4 gap-2">
                     <OptionButton
                       label="None"
@@ -577,133 +550,116 @@ const SettingsPage: React.FC = () => {
                     />
                   </div>
                 </div>
-              </div>
-            </div>
-          </SettingSection>
+              </SettingRow>
+            </section>
 
-          {/* Custom Wordlists Management Section */}
-          <AnimatePresence>
+            {/* Custom Wordlists Section */}
             {userWordlists.length > 0 && (
-              <SettingSection
-                title="Custom Wordlists"
-                icon={<BookMarked className="w-5 h-5" />}
-                accentColor="blue"
-                defaultCollapsed={false}
-              >
-                <div className="space-y-6">
-                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-100 dark:border-blue-800/40">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start">
-                        <Info className="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" />
+              <section className="mb-12">
+                <SectionTitle
+                  icon={<BookMarked className="w-5 h-5 text-blue-500" />}
+                  title="Custom Wordlists"
+                  description="Manage your personal word collections"
+                />
+
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6 border border-blue-100 dark:border-blue-800/40">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start">
+                      <Info className="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm text-blue-600/80 dark:text-blue-300/80">
+                          Your custom wordlists are stored securely. Deleting a
+                          wordlist will permanently remove it.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setIsDeleteAllWordlistsOpen(true)}
+                      className="ml-4 flex-shrink-0 inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 rounded-lg transition-all duration-200 border border-red-200 dark:border-red-800/40"
+                    >
+                      <Trash2 className="w-4 h-4 mr-1.5" />
+                      Delete All
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {visibleWordlists.map((wordlist) => (
+                    <div
+                      key={wordlist.id}
+                      className="group bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center hover:border-blue-200 dark:hover:border-blue-800/40 transition-all duration-200"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-blue-50 dark:bg-blue-900/20 p-2.5 rounded-lg">
+                          <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
                         <div>
-                          <h4 className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
-                            Manage Your Wordlists
-                          </h4>
-                          <p className="text-sm text-blue-600/80 dark:text-blue-300/80">
-                            Your custom wordlists are stored securely. Deleting
-                            a wordlist will permanently remove it from your
-                            device.
-                          </p>
+                          <h3 className="font-medium text-gray-800 dark:text-gray-200">
+                            {wordlist.title || wordlist.language}
+                          </h3>
+                          <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center mt-1">
+                            <BarChart className="w-4 h-4 mr-1.5 opacity-70" />
+                            {wordlist.words.length} words
+                          </span>
                         </div>
                       </div>
                       <button
-                        onClick={() => setIsDeleteAllWordlistsOpen(true)}
-                        className="ml-4 flex-shrink-0 inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 rounded-lg transition-all duration-200 border border-red-200 dark:border-red-800/40 hover:shadow-md"
+                        onClick={() => openDeleteConfirmation(wordlist)}
+                        className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-red-900/20"
                       >
-                        <Trash2 className="w-4 h-4 mr-1.5" />
-                        Delete All
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    {visibleWordlists.map((wordlist) => (
-                      <div
-                        key={wordlist.id}
-                        className="group bg-white dark:bg-secondary-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-200 dark:hover:border-blue-800/40"
-                      >
-                        <div className="flex items-center space-x-4">
-                          <div className="bg-blue-50 dark:bg-blue-900/20 p-2.5 rounded-lg group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
-                            <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                              {wordlist.title || wordlist.language}
-                            </h3>
-                            <div className="flex items-center mt-1 space-x-3">
-                              <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
-                                <BarChart className="w-4 h-4 mr-1.5 opacity-70" />
-                                {wordlist.words.length} words
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => openDeleteConfirmation(wordlist)}
-                          className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-red-900/20"
-                          aria-label={`Delete ${
-                            wordlist.title || wordlist.language
-                          } wordlist`}
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  {userWordlists.length > ITEMS_PER_PAGE && (
-                    <button
-                      onClick={() => setIsExpanded(!isExpanded)}
-                      className="w-full py-3 px-4 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 border border-blue-200 dark:border-blue-800/40"
-                    >
-                      <span>
-                        {isExpanded
-                          ? "Show Less"
-                          : `Show More (${
-                              userWordlists.length - ITEMS_PER_PAGE
-                            } more)`}
-                      </span>
-                      {isExpanded ? (
-                        <ChevronUp className="w-4 h-4" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4" />
-                      )}
-                    </button>
-                  )}
+                  ))}
                 </div>
-              </SettingSection>
-            )}
-          </AnimatePresence>
 
-          <SettingSection
-            title="Data Management"
-            icon={<Database className="w-5 h-5" />}
-            accentColor="blue"
-            defaultCollapsed={false}
-          >
-            <div className="space-y-6">
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-100 dark:border-blue-800/40">
+                {userWordlists.length > ITEMS_PER_PAGE && (
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="w-full mt-4 py-3 px-4 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 border border-blue-200 dark:border-blue-800/40"
+                  >
+                    <span>
+                      {isExpanded
+                        ? "Show Less"
+                        : `Show More (${
+                            userWordlists.length - ITEMS_PER_PAGE
+                          } more)`}
+                    </span>
+                    {isExpanded ? (
+                      <ChevronUp className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
+              </section>
+            )}
+
+            {/* Data Management Section */}
+            <section>
+              <SectionTitle
+                icon={<Database className="w-5 h-5 text-blue-500" />}
+                title="Data Management"
+                description="Manage your app data and preferences"
+              />
+
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6 border border-blue-100 dark:border-blue-800/40">
                 <div className="flex items-start">
                   <Info className="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" />
-                  <div>
-                    <h4 className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
-                      Manage Your Data
-                    </h4>
-                    <p className="text-sm text-blue-600/80 dark:text-blue-300/80">
-                      All data is stored securely on your device. Please note
-                      that resetting data cannot be undone.
-                    </p>
-                  </div>
+                  <p className="text-sm text-blue-600/80 dark:text-blue-300/80">
+                    All data is stored securely on your device. Please note that
+                    resetting data cannot be undone.
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <button
                   onClick={() => setIsResetProgressOpen(true)}
-                  className="w-full flex items-center justify-between p-4 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 border border-amber-200 dark:border-amber-800/40 text-amber-700 dark:text-amber-300 transition-all duration-200 group"
+                  className="w-full flex items-center justify-between p-4 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 border border-amber-200 dark:border-amber-800/40 text-amber-700 dark:text-amber-300 transition-all duration-200"
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-amber-100 dark:bg-amber-800/40 rounded-lg group-hover:bg-amber-200 dark:group-hover:bg-amber-800/60 transition-colors">
+                    <div className="p-2 bg-amber-100 dark:bg-amber-800/40 rounded-lg">
                       <RefreshCw className="w-5 h-5" />
                     </div>
                     <div className="text-left">
@@ -713,15 +669,15 @@ const SettingsPage: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-amber-500 dark:text-amber-400 opacity-60" />
+                  <ChevronRight className="w-5 h-5 opacity-60" />
                 </button>
 
                 <button
                   onClick={() => setIsResetAllDataOpen(true)}
-                  className="w-full flex items-center justify-between p-4 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-300 transition-all duration-200 group"
+                  className="w-full flex items-center justify-between p-4 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-300 transition-all duration-200"
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-red-100 dark:bg-red-800/40 rounded-lg group-hover:bg-red-200 dark:group-hover:bg-red-800/60 transition-colors">
+                    <div className="p-2 bg-red-100 dark:bg-red-800/40 rounded-lg">
                       <AlertTriangle className="w-5 h-5" />
                     </div>
                     <div className="text-left">
@@ -731,15 +687,13 @@ const SettingsPage: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-red-500 dark:text-red-400 opacity-60" />
+                  <ChevronRight className="w-5 h-5 opacity-60" />
                 </button>
               </div>
-            </div>
-          </SettingSection>
+            </section>
 
-          {/* Footer Section */}
-          <div className="col-span-1 md:col-span-2 mt-8">
-            <div className="border-t border-gray-200 dark:border-gray-700/50 bg-white/90 dark:bg-secondary-800/90 backdrop-blur-lg py-6 px-7 rounded-xl shadow-md">
+            {/* Footer */}
+            <div className="mt-12 pt-6 border-t border-gray-100 dark:border-gray-800">
               <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
                 <div className="flex flex-col items-center md:items-start">
                   <div className="flex items-center mb-2">
@@ -778,7 +732,7 @@ const SettingsPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Confirm Dialog for Reset Progress */}
+      {/* Keep all the existing ConfirmDialog and Toast components */}
       <ConfirmDialog
         title="Reset Progress"
         message="Are you sure you want to reset your progress? This action cannot be undone."
@@ -791,7 +745,6 @@ const SettingsPage: React.FC = () => {
         onCancel={() => setIsResetProgressOpen(false)}
       />
 
-      {/* Confirm Dialog for Reset All Data */}
       <ConfirmDialog
         title="Reset All Data"
         message="Are you sure you want to reset all data? This will remove all progress and custom word lists."
@@ -804,7 +757,6 @@ const SettingsPage: React.FC = () => {
         onCancel={() => setIsResetAllDataOpen(false)}
       />
 
-      {/* New confirm dialog for deleting wordlist */}
       <ConfirmDialog
         isOpen={isDeleteWordlistOpen}
         title="Remove Custom Wordlist"
@@ -830,7 +782,6 @@ const SettingsPage: React.FC = () => {
         confirmVariant="danger"
       />
 
-      {/* Confirm Dialog for Delete All Wordlists */}
       <ConfirmDialog
         isOpen={isDeleteAllWordlistsOpen}
         title="Delete All Wordlists"
