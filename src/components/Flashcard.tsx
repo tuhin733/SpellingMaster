@@ -192,12 +192,12 @@ const Flashcard: React.FC<FlashcardProps> = ({
                       e.stopPropagation();
                       handleSpeak();
                     }}
-                    className={`bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full p-3 sm:p-4 transition-all dark:bg-blue-900/40 dark:hover:bg-blue-900/60 dark:text-blue-300 ${
+                    className={`bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full p-4 sm:p-4.5 transition-all dark:bg-blue-900/40 dark:hover:bg-blue-900/60 dark:text-blue-300 ${
                       isSpeaking ? "animate-pulse" : ""
                     }`}
                     aria-label="Listen to word pronunciation"
                   >
-                    <Volume2 className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <Volume2 className="w-7 h-7 sm:w-8 sm:h-8" />
                   </button>
                 ) : null}
                 <div className="mt-4 sm:mt-6 flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">

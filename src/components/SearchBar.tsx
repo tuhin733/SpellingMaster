@@ -1,11 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { Search, X, Filter, ChevronDown } from "lucide-react";
+import { Search, X, Filter, ChevronDown, Check } from "lucide-react";
 
 export type FilterOption = {
   label: string;
   value: string;
 };
+
+interface DropdownPosition {
+  top: number | "auto";
+  left: number | "auto";
+  bottom: number | "auto";
+  isMobile: boolean;
+}
 
 interface SearchBarProps {
   onSearch: (term: string) => void;
@@ -27,9 +34,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({
+  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
     top: 0,
     left: 0,
+    bottom: "auto",
+    isMobile: false,
   });
   const inputRef = useRef<HTMLInputElement>(null);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
@@ -58,10 +67,25 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const calculateDropdownPosition = () => {
     if (filterButtonRef.current) {
       const rect = filterButtonRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + window.scrollY + 5, // Add a few pixels for spacing
-        left: rect.left + window.scrollX, // Align left edge of dropdown with left edge of button
-      });
+      const isMobile = window.innerWidth < 768; // md breakpoint
+
+      if (isMobile) {
+        // On mobile, position from the bottom of the viewport
+        setDropdownPosition({
+          top: "auto", // This will be ignored in favor of bottom positioning
+          left: 0,
+          bottom: 0,
+          isMobile: true,
+        });
+      } else {
+        // On desktop, position relative to the filter button
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY + 5,
+          left: rect.left + window.scrollX,
+          bottom: "auto",
+          isMobile: false,
+        });
+      }
     }
   };
 
@@ -97,11 +121,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
   }, [isFilterOpen]);
 
   const selectedOption =
-    filterOptions.find((opt) => opt.value === selectedFilter) || filterOptions[0];
+    filterOptions.find((opt) => opt.value === selectedFilter) ||
+    filterOptions[0];
 
   // Determine the right padding based on whether the filter button is present
   // Increased padding to accommodate clear button/ESC hint + filter button
-  const inputPaddingRightClass = filterOptions.length > 0 ? "pr-[7.5rem]" : "pr-12";
+  const inputPaddingRightClass =
+    filterOptions.length > 0 ? "pr-[7.5rem]" : "pr-12";
 
   // Determine filter button styles based on whether a filter is applied
   const isFilterApplied = selectedFilter !== "all";
@@ -178,8 +204,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
           >
             ESC
           </div>
-        ) : null} {/* No hint if no search and no filter options */}
-
+        ) : null}{" "}
+        {/* No hint if no search and no filter options */}
         {/* Vertical Line and Filter Button Container */}
         {filterOptions.length > 0 && (
           <>
@@ -198,37 +224,75 @@ const SearchBar: React.FC<SearchBarProps> = ({
       {/* Filter Dropdown Portal */}
       {isFilterOpen &&
         ReactDOM.createPortal(
-          <div
-            ref={dropdownRef}
-            style={{
-              position: "absolute",
-              top: `${dropdownPosition.top}px`,
-              // Align dropdown with the left edge of the filter button
-              left: `${dropdownPosition.left}px`,
-              zIndex: 50, // Ensure it's above most content
-              minWidth: filterButtonRef.current?.offsetWidth || 150, // Match button width or set a minimum
-            }}
-            className="mt-1 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
-          >
-            {filterOptions.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => {
-                  onFilterChange?.(option.value);
-                  setIsFilterOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2.5 text-sm transition-colors
-                    ${
-                      selectedFilter === option.value
-                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
-                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
-                    }`}
+          <>
+            {/* Backdrop for mobile */}
+            {dropdownPosition.isMobile && (
+              <div
+                className="fixed inset-0 bg-black/50 z-40"
+                onClick={() => setIsFilterOpen(false)}
+              />
+            )}
+            <div
+              ref={dropdownRef}
+              style={{
+                position: "fixed",
+                top: dropdownPosition.isMobile
+                  ? "auto"
+                  : `${dropdownPosition.top}px`,
+                left: dropdownPosition.isMobile
+                  ? 0
+                  : `${dropdownPosition.left}px`,
+                bottom: dropdownPosition.isMobile ? 0 : "auto",
+                right: dropdownPosition.isMobile ? 0 : "auto",
+                zIndex: 50,
+              }}
+              className={`
+                ${
+                  dropdownPosition.isMobile
+                    ? "rounded-t-xl w-full transform transition-transform duration-200 ease-out"
+                    : "rounded-xl w-[200px]"
+                }
+                bg-white dark:bg-gray-900 shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden
+              `}
+            >
+              {dropdownPosition.isMobile && (
+                <div className="flex justify-center p-2 border-b border-gray-200 dark:border-gray-700">
+                  <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+                </div>
+              )}
+              <div
+                className={`py-1 ${
+                  dropdownPosition.isMobile
+                    ? "max-h-[50vh] overflow-y-auto"
+                    : ""
+                }`}
               >
-                {option.label}
-              </button>
-            ))}
-          </div>,
-          document.body // Append to the body to escape the search bar's positioning context
+                {filterOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => {
+                      onFilterChange?.(option.value);
+                      setIsFilterOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 sm:py-2.5 text-sm transition-all duration-200 flex items-center justify-between
+                      ${dropdownPosition.isMobile ? "py-4" : "py-2.5"}
+                      ${
+                        selectedFilter === option.value
+                          ? "bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                          : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
+                      }
+                    `}
+                  >
+                    <span>{option.label}</span>
+                    {selectedFilter === option.value && (
+                      <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>,
+          document.body
         )}
     </div>
   );

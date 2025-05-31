@@ -42,7 +42,7 @@ export const LanguageSelector: React.FC = () => {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="pl-7 sm:pl-9 pr-6 sm:pr-8 py-1 sm:py-1.5 rounded-lg border border-gray-200 bg-white text-xs sm:text-sm font-medium text-gray-700 
+          className="pl-7 sm:pl-9 pr-6 sm:pr-8 py-2.5 sm:py-2 rounded-lg border border-gray-200 bg-white text-xs sm:text-sm font-medium text-gray-700 
             focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:focus:ring-primary-500 dark:focus:border-primary-500
             hover:border-gray-300 dark:hover:border-gray-600 transition-all flex items-center justify-between w-full"

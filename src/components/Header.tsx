@@ -11,6 +11,7 @@ import {
 import { TranslationToggle } from "./TranslationToggle";
 import { LanguageSelector } from "./LanguageSelector";
 import Tooltip from "./Tooltip";
+import SettingsModal from "./SettingsModal";
 
 interface HeaderProps {
   title?: string;
@@ -26,12 +27,12 @@ const Header: React.FC<HeaderProps> = ({
   showStats = true,
 }) => {
   const location = useLocation();
-  const isSettingsPage = location.pathname === "/settings";
   const isStatsPage = location.pathname === "/statistics";
   const isHomePage = location.pathname === "/";
   const isFlashcardPage = location.pathname.includes("/flashcards/");
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,40 +69,38 @@ const Header: React.FC<HeaderProps> = ({
             </Tooltip>
           )}
 
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center group">
-              <Tooltip content="Go to Home" position="bottom">
-                <div className="overflow-hidden rounded-lg mr-3 transition-transform duration-300 group-hover:scale-105">
-                  <img
-                    src="/spelling-master-icon.svg"
-                    alt="Spelling Master Logo"
-                    className={`transition-all duration-300 ${
-                      scrolled
-                        ? "w-7 h-7 sm:w-8 sm:h-8"
-                        : "w-9 h-9 sm:w-10 sm:h-10"
-                    }`}
-                  />
-                </div>
-              </Tooltip>
-              <h1
-                className={`font-bold text-secondary-900 transition-all duration-200 group-hover:text-primary-600 dark:text-secondary-100 dark:group-hover:text-primary-400 ${
-                  isHomePage
-                    ? scrolled
-                      ? "text-lg sm:text-xl"
-                      : "text-xl sm:text-2xl"
-                    : scrolled
-                    ? "text-base sm:text-lg"
-                    : "text-lg sm:text-xl"
-                }`}
-              >
-                {title || "Spelling Master"}
-              </h1>
-            </Link>
-          </div>
+          <Link to="/" className="flex items-center group">
+            <Tooltip content="Go to Home" position="bottom">
+              <div className="overflow-hidden rounded-lg mr-3 transition-transform duration-300 group-hover:scale-105">
+                <img
+                  src="/spelling-master-icon.svg"
+                  alt="Spelling Master Logo"
+                  className={`transition-all duration-300 ${
+                    scrolled
+                      ? "w-7 h-7 sm:w-8 sm:h-8"
+                      : "w-9 h-9 sm:w-10 sm:h-10"
+                  }`}
+                />
+              </div>
+            </Tooltip>
+            <h1
+              className={`font-bold text-secondary-900 transition-all duration-200 group-hover:text-primary-600 dark:text-secondary-100 dark:group-hover:text-primary-400 ${
+                isHomePage
+                  ? scrolled
+                    ? "text-lg sm:text-xl"
+                    : "text-xl sm:text-2xl"
+                  : scrolled
+                  ? "text-base sm:text-lg"
+                  : "text-lg sm:text-xl"
+              }`}
+            >
+              {title || "Spelling Master"}
+            </h1>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center space-x-3">
           {isFlashcardPage && (
             <div className="flex items-center gap-3">
               <TranslationToggle />
@@ -119,27 +118,27 @@ const Header: React.FC<HeaderProps> = ({
               </Link>
             </Tooltip>
           )}
-          {showSettings && !isSettingsPage && (
+          {showSettings && (
             <Tooltip content="Settings" position="bottom">
-              <Link
-                to="/settings"
+              <button
+                onClick={() => setIsSettingsOpen(true)}
                 aria-label="Settings"
                 className="inline-flex p-2 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-400/50 border-0 group dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
               >
                 <Settings className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
-              </Link>
+              </button>
             </Tooltip>
           )}
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="inline-block relative group md:hidden">
+        <div className="md:hidden">
           <Tooltip
             content={mobileMenuOpen ? "Close menu" : "Open menu"}
             position="bottom"
           >
             <button
-              className="inline-flex p-2 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500/50 border-0 dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
+              className="inline-flex p-3 sm:p-2.5 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500/50 border-0 dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}
@@ -182,7 +181,7 @@ const Header: React.FC<HeaderProps> = ({
               <Tooltip content="View your learning statistics" position="right">
                 <Link
                   to="/statistics"
-                  className="flex items-center gap-3 py-3 px-2 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-lg transition-colors focus:outline-none focus:ring-0 outline-none border-0 !outline-none !border-none no-outline"
+                  className="flex items-center gap-3 py-4 px-3 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-lg transition-colors focus:outline-none focus:ring-0 outline-none border-0 !outline-none !border-none no-outline"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <PieChart className="w-5 h-5 text-secondary-600 dark:text-secondary-300" />
@@ -192,26 +191,34 @@ const Header: React.FC<HeaderProps> = ({
                 </Link>
               </Tooltip>
             )}
-            {showSettings && !isSettingsPage && (
+            {showSettings && (
               <Tooltip
                 content="Customize your learning experience"
                 position="right"
               >
-                <Link
-                  to="/settings"
-                  className="flex items-center gap-3 py-3 px-2 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-lg transition-colors focus:outline-none focus:ring-0 border-0 !outline-none !border-none no-outline"
-                  onClick={() => setMobileMenuOpen(false)}
+                <button
+                  onClick={() => {
+                    setIsSettingsOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 py-3 px-2 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-lg transition-colors focus:outline-none focus:ring-0 border-0 !outline-none !border-none no-outline"
                 >
                   <Settings2 className="w-5 h-5 text-secondary-600 dark:text-secondary-300" />
                   <span className="text-secondary-900 dark:text-secondary-100">
                     Settings
                   </span>
-                </Link>
+                </button>
               </Tooltip>
             )}
           </div>
         )}
       </header>
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </div>
   );
 };

@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Award,
   BookOpen,
+  Check,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -431,13 +432,16 @@ const StatisticsPage: React.FC = () => {
                   setSelectedLanguage("all");
                   setIsLanguageOpen(false);
                 }}
-                className={`w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors ${
+                className={`w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between ${
                   selectedLanguage === "all"
                     ? "bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300"
                     : "text-secondary-700 dark:text-secondary-300"
                 }`}
               >
-                All Languages
+                <span>All Languages</span>
+                {selectedLanguage === "all" && (
+                  <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                )}
               </button>
               {LANGUAGE_OPTIONS.map((lang) => (
                 <button
@@ -452,10 +456,15 @@ const StatisticsPage: React.FC = () => {
                       : "text-secondary-700 dark:text-secondary-300"
                   }`}
                 >
-                  <span>{lang.name}</span>
-                  <span className="text-xs text-secondary-500">
-                    {lang.code}
-                  </span>
+                  <div className="flex items-center">
+                    <span>{lang.name}</span>
+                    <span className="text-xs text-secondary-500 ml-2">
+                      {lang.code}
+                    </span>
+                  </div>
+                  {selectedLanguage === lang.code && (
+                    <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  )}
                 </button>
               ))}
             </div>

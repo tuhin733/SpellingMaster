@@ -13,7 +13,6 @@ const HomePage = lazy(() => import("./pages/HomePage"));
 const LevelsPage = lazy(() => import("./pages/LevelsPage"));
 const FlashcardPage = lazy(() => import("./pages/FlashcardPage"));
 const ResultsPage = lazy(() => import("./pages/ResultsPage"));
-const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const StatisticsPage = lazy(() => import("./pages/StatisticsPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const HelpCenterPage = lazy(() => import("./pages/HelpCenterPage"));
@@ -96,7 +95,7 @@ const AppRoutes: React.FC = () => {
                 path="/results/:wordlistId/:level"
                 element={<ResultsPage />}
               />
-              <Route path="/settings" element={<SettingsPage />} />
+
               <Route path="/statistics" element={<StatisticsPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/help" element={<HelpCenterPage />} />

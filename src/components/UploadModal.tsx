@@ -299,6 +299,16 @@ const UploadModal: React.FC<UploadModalProps> = ({
     downloadTemplate(type);
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      // Prevent background scrolling
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   // Get the color class and icon for file type
@@ -395,10 +405,15 @@ const UploadModal: React.FC<UploadModalProps> = ({
                       : "text-secondary-700 dark:text-secondary-300"
                   }`}
                 >
-                  <span>{lang.name}</span>
-                  <span className="text-xs text-secondary-500">
-                    {lang.code}
-                  </span>
+                  <div className="flex items-center">
+                    <span>{lang.name}</span>
+                    <span className="text-xs text-secondary-500 ml-2">
+                      {lang.code}
+                    </span>
+                  </div>
+                  {selectedLanguage === lang.name && (
+                    <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  )}
                 </button>
               ))}
             </div>
