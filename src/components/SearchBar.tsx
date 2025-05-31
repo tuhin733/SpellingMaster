@@ -34,12 +34,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
-    top: 0,
-    left: 0,
-    bottom: "auto",
-    isMobile: false,
-  });
+  const [dropdownPosition, setDropdownPosition] =
+    useState<DropdownPosition | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -87,6 +83,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
         });
       }
     }
+  };
+
+  const toggleFilter = () => {
+    if (!isFilterOpen) {
+      calculateDropdownPosition();
+    } else {
+      setDropdownPosition(null);
+    }
+    setIsFilterOpen(!isFilterOpen);
   };
 
   // Close filter dropdown when clicking outside
@@ -212,7 +217,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-3" />
             <button
               ref={filterButtonRef}
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              onClick={toggleFilter}
               className={filterButtonClasses}
             >
               <Filter className={filterIconClasses} />
@@ -223,6 +228,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
       {/* Filter Dropdown Portal */}
       {isFilterOpen &&
+        dropdownPosition &&
         ReactDOM.createPortal(
           <>
             {/* Backdrop for mobile */}
@@ -247,13 +253,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 zIndex: 50,
               }}
               className={`
-                ${
-                  dropdownPosition.isMobile
-                    ? "rounded-t-xl w-full transform transition-transform duration-200 ease-out"
-                    : "rounded-xl w-[200px]"
-                }
-                bg-white dark:bg-gray-900 shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden
-              `}
+              ${
+                dropdownPosition.isMobile
+                  ? "rounded-t-xl w-full transform transition-transform duration-200 ease-out"
+                  : "rounded-xl w-[200px]"
+              }
+              bg-white dark:bg-gray-900 shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden
+            `}
             >
               {dropdownPosition.isMobile && (
                 <div className="flex justify-center p-2 border-b border-gray-200 dark:border-gray-700">
@@ -275,13 +281,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
                       setIsFilterOpen(false);
                     }}
                     className={`w-full text-left px-4 py-3 sm:py-2.5 text-sm transition-all duration-200 flex items-center justify-between
-                      ${dropdownPosition.isMobile ? "py-4" : "py-2.5"}
-                      ${
-                        selectedFilter === option.value
-                          ? "bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
-                          : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
-                      }
-                    `}
+                    ${dropdownPosition.isMobile ? "py-4" : "py-2.5"}
+                    ${
+                      selectedFilter === option.value
+                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
+                    }
+                  `}
                   >
                     <span>{option.label}</span>
                     {selectedFilter === option.value && (
