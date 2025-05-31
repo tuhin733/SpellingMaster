@@ -5,6 +5,7 @@ import ConfirmDialog from "./ConfirmDialog";
 import Toast from "./Toast";
 import {
   Text,
+  XCircle,
   RefreshCw,
   AlertTriangle,
   Settings2,
@@ -19,19 +20,27 @@ import {
   Palette,
   Bell,
   Check,
+  Info,
+  Github,
+  Globe,
+  Heart,
+  Mail,
+  HelpCircle,
+  ChevronDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { playSound } from "../utils/sound";
 import * as db from "../utils/db";
 import { Wordlist } from "../types";
 import ReactDOM from "react-dom";
+import Tooltip from "./Tooltip";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-type TabType = "appearance" | "study" | "wordlists" | "data";
+type TabType = "appearance" | "study" | "wordlists" | "data" | "about";
 
 interface TabItem {
   id: TabType;
@@ -60,12 +69,18 @@ const tabs: TabItem[] = [
     label: "Data Management",
     icon: <Settings2 className="w-5 h-5" />,
   },
+  {
+    id: "about",
+    label: "About",
+    icon: <Info className="w-5 h-5" />,
+  },
 ];
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const { settings, updateSettings, wordlists, refreshWordlists } = useApp();
   const { clearProgress, clearAllData } = useProgress();
   const [activeTab, setActiveTab] = useState<TabType>("appearance");
+  const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(null);
 
   const [isResetProgressOpen, setIsResetProgressOpen] = useState(false);
   const [isResetAllDataOpen, setIsResetAllDataOpen] = useState(false);
@@ -94,6 +109,39 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const visibleWordlists = isExpanded
     ? userWordlists
     : userWordlists.slice(0, ITEMS_PER_PAGE);
+
+  // Add FAQs data
+  const faqs = [
+    {
+      question: "How do I create a custom word list?",
+      answer:
+        "To create a custom word list, go to the main menu and select 'Word Lists'. Click the '+' button to create a new list. You can then add words manually or import them from a file.",
+    },
+    {
+      question: "Can I adjust the difficulty of practice sessions?",
+      answer:
+        "Yes! You can customize your study sessions in the Settings page. You can adjust the number of words per session and set time limits for answering each word.",
+    },
+    {
+      question: "How does the progress tracking work?",
+      answer:
+        "The app tracks your performance across all practice sessions. It records your accuracy, speed, and commonly misspelled words. You can view your statistics in the Progress section.",
+    },
+    {
+      question: "Can I use the app offline?",
+      answer:
+        "Yes, Spelling Master works offline! Your progress and custom word lists are stored locally on your device.",
+    },
+    {
+      question: "How do I reset my progress?",
+      answer:
+        "You can reset your progress in the Settings page under 'Data Management'. You have the option to reset only your progress or all data including custom word lists.",
+    },
+  ];
+
+  const toggleFAQ = (index: number) => {
+    setExpandedFaqIndex(expandedFaqIndex === index ? null : index);
+  };
 
   const showToast = (message: string) => {
     setToast({ message, isVisible: true });
@@ -203,12 +251,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
               <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100">
                 {tabs.find((tab) => tab.id === activeTab)?.label}
               </h3>
-              <button
-                onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <Tooltip content="Close" position="bottom">
+                <button
+                  onClick={onClose}
+                  className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-lg transition-colors"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </Tooltip>
             </div>
 
             <div className="overflow-y-auto flex-1 p-4">
@@ -328,17 +378,18 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                   {wordlist.title || wordlist.language}
                                 </span>
                                 <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center mt-1">
-                                  <BarChart className="w-4 h-4 mr-1.5" />
                                   {wordlist.words.length} words
                                 </div>
                               </div>
                             </div>
-                            <button
-                              onClick={() => openDeleteConfirmation(wordlist)}
-                              className="p-1.5 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-5 h-5" />
-                            </button>
+                            <Tooltip content="Delete" position="top">
+                              <button
+                                onClick={() => openDeleteConfirmation(wordlist)}
+                                className="p-1.5 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 rounded-lg transition-colors"
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </button>
+                            </Tooltip>
                           </div>
                         </div>
                       ))}
@@ -375,6 +426,177 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                         onClick={() => setIsResetAllDataOpen(true)}
                         variant="danger"
                       />
+                    </div>
+                  )}
+
+                  {activeTab === "about" && (
+                    <div className="space-y-6">
+                      {/* App Info Section */}
+                      <div className="text-center">
+                        <div className="inline-flex items-center justify-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl mb-4">
+                          <img
+                            src="/spelling-master-icon.svg"
+                            alt="Spelling Master Logo"
+                            className="w-12 h-12"
+                          />
+                        </div>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                          Spelling Master
+                        </h1>
+                        <p className="text-gray-600 dark:text-gray-300">
+                          Version 0.1.0
+                        </p>
+                      </div>
+
+                      {/* Description */}
+                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30 p-4">
+                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-center">
+                          Spelling Master is an interactive learning application
+                          designed to help users improve their spelling skills
+                          through engaging practice sessions and personalized
+                          word lists.
+                        </p>
+                      </div>
+
+                      {/* Features List */}
+                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30 p-4">
+                        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                          Key Features
+                        </h2>
+                        <ul className="space-y-3">
+                          <li className="flex items-start">
+                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mt-0.5 mr-3">
+                              <span className="block w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-400" />
+                            </span>
+                            <span className="text-gray-600 dark:text-gray-300">
+                              Customizable study sessions with adjustable word
+                              counts and time limits
+                            </span>
+                          </li>
+                          <li className="flex items-start">
+                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mt-0.5 mr-3">
+                              <span className="block w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-400" />
+                            </span>
+                            <span className="text-gray-600 dark:text-gray-300">
+                              Create and manage custom word lists for targeted
+                              practice
+                            </span>
+                          </li>
+                          <li className="flex items-start">
+                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mt-0.5 mr-3">
+                              <span className="block w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-400" />
+                            </span>
+                            <span className="text-gray-600 dark:text-gray-300">
+                              Progress tracking and performance statistics
+                            </span>
+                          </li>
+                          <li className="flex items-start">
+                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mt-0.5 mr-3">
+                              <span className="block w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-400" />
+                            </span>
+                            <span className="text-gray-600 dark:text-gray-300">
+                              Dark mode support for comfortable learning at any
+                              time
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      {/* Help & FAQ Section */}
+                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30 p-4">
+                        <div className="flex items-start space-x-4 mb-6">
+                          <div className="flex-shrink-0">
+                            <HelpCircle className="w-6 h-6 text-blue-500 dark:text-blue-400" />
+                          </div>
+                          <div>
+                            <h2 className="text-lg font-semibold text-blue-700 dark:text-blue-300 mb-2">
+                              Need Help?
+                            </h2>
+                            <p className="text-blue-600/80 dark:text-blue-300/80 mb-4">
+                              Find answers to common questions below or reach
+                              out to our support team.
+                            </p>
+                            <a
+                              href="mailto:support@spelling-master.com"
+                              className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-100 hover:bg-blue-200 dark:text-blue-300 dark:bg-blue-800/40 dark:hover:bg-blue-800/60 rounded-lg transition-colors duration-200"
+                            >
+                              <Mail className="w-4 h-4 mr-2" />
+                              Contact Support
+                            </a>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          {faqs.map((faq, index) => (
+                            <div
+                              key={index}
+                              className="border-b border-gray-200 dark:border-gray-700/50 last:border-0"
+                            >
+                              <button
+                                onClick={() => toggleFAQ(index)}
+                                className="w-full py-4 flex items-center justify-between text-left focus:outline-none"
+                              >
+                                <span className="font-medium text-gray-700 dark:text-gray-200">
+                                  {faq.question}
+                                </span>
+                                <ChevronDown
+                                  className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${
+                                    expandedFaqIndex === index
+                                      ? "transform rotate-180"
+                                      : ""
+                                  }`}
+                                />
+                              </button>
+                              <AnimatePresence>
+                                {expandedFaqIndex === index && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <p className="pb-4 text-gray-600 dark:text-gray-300">
+                                      {faq.answer}
+                                    </p>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Credits Section */}
+                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30 p-4">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center mb-4">
+                            <p className="text-gray-600 dark:text-gray-300">
+                              Made with{" "}
+                              <Heart className="w-4 h-4 inline text-red-500 mx-1" />{" "}
+                              by the Spelling Master Team
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-center space-x-4">
+                            <a
+                              href="https://github.com/tuhin733/SpellingMaster"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                            >
+                              <Github className="w-5 h-5" />
+                            </a>
+                            <a
+                              href="https://spelling-master.vercel.app"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                            >
+                              <Globe className="w-5 h-5" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </motion.div>
