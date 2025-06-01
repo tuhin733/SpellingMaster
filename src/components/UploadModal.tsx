@@ -357,82 +357,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   const fileTypeInfo = getFileTypeInfo(selectedFileType);
 
-  // Custom language selector component
-  const LanguageSelector = () => {
-    const selectedLang = LANGUAGE_OPTIONS.find(
-      (lang) => lang.name === selectedLanguage
-    );
-
-    return (
-      <div className="relative" ref={languageRef}>
-        <button
-          type="button"
-          onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-          className="w-full px-3 py-2 text-sm border border-secondary-200 rounded-lg shadow-sm focus:outline-none dark:bg-secondary-700 dark:border-secondary-600 dark:text-secondary-100 transition-all flex items-center justify-between"
-        >
-          <span className="flex items-center">
-            {selectedLang ? (
-              <>
-                <span className="mr-2">{selectedLang.name}</span>
-                <span className="text-xs text-secondary-500">
-                  ({selectedLang.code})
-                </span>
-              </>
-            ) : (
-              <span className="text-secondary-500">Select a language</span>
-            )}
-          </span>
-          <svg
-            className={`w-4 h-4 transition-transform ${
-              isLanguageOpen ? "rotate-180" : ""
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
-
-        {isLanguageOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-secondary-200 dark:bg-secondary-800 dark:border-secondary-700 max-h-60 overflow-y-auto">
-            <div className="py-1">
-              {LANGUAGE_OPTIONS.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => {
-                    setSelectedLanguage(lang.name);
-                    setIsLanguageOpen(false);
-                  }}
-                  className={`w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between ${
-                    selectedLanguage === lang.name
-                      ? "bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300"
-                      : "text-secondary-700 dark:text-secondary-300"
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <span>{lang.name}</span>
-                    <span className="text-xs text-secondary-500 ml-2">
-                      {lang.code}
-                    </span>
-                  </div>
-                  {selectedLanguage === lang.name && (
-                    <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
@@ -563,22 +487,137 @@ const UploadModal: React.FC<UploadModalProps> = ({
               </motion.div>
 
               {/* Title and Language inputs in a single row */}
-              <div className="grid grid-cols-2 gap-4">
+              <div
+                className={`${
+                  isMobile
+                    ? "flex flex-col space-y-3"
+                    : "grid grid-cols-2 gap-4"
+                }`}
+              >
                 {/* Title input */}
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Title
+                  </label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="My Custom Wordlist"
-                    className="w-full px-3 py-2 text-sm border border-secondary-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:bg-secondary-700 dark:border-secondary-600 dark:text-secondary-100 dark:focus:border-blue-400 dark:focus:ring-blue-800 transition-all outline-none"
+                    className={`w-full px-3 ${
+                      isMobile ? "py-3" : "py-2"
+                    } text-sm border border-secondary-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:bg-secondary-700 dark:border-secondary-600 dark:text-secondary-100 dark:focus:border-blue-400 dark:focus:ring-blue-800 transition-all outline-none`}
                     required
                   />
                 </div>
 
                 {/* Language selector */}
                 <div>
-                  <LanguageSelector />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Language
+                  </label>
+                  <div className="relative" ref={languageRef}>
+                    <button
+                      type="button"
+                      onClick={() => setIsLanguageOpen(!isLanguageOpen)}
+                      className={`w-full ${
+                        isMobile ? "py-3" : "py-2"
+                      } px-3 text-sm border border-secondary-200 rounded-lg shadow-sm focus:outline-none dark:bg-secondary-700 dark:border-secondary-600 dark:text-secondary-100 transition-all flex items-center justify-between`}
+                    >
+                      <span className="flex items-center">
+                        {selectedLanguage ? (
+                          <>
+                            <span className="mr-2">{selectedLanguage}</span>
+                            <span className="text-xs text-secondary-500">
+                              (
+                              {
+                                LANGUAGE_OPTIONS.find(
+                                  (lang) => lang.name === selectedLanguage
+                                )?.code
+                              }
+                              )
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-secondary-500">
+                            Select a language
+                          </span>
+                        )}
+                      </span>
+                      <svg
+                        className={`w-4 h-4 transition-transform ${
+                          isLanguageOpen ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+
+                    {isLanguageOpen && (
+                      <div
+                        className={`absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-secondary-200 dark:bg-secondary-800 dark:border-secondary-700 ${
+                          isMobile
+                            ? "fixed inset-x-0 bottom-0 rounded-b-none max-h-[50vh]"
+                            : "max-h-60"
+                        } overflow-y-auto`}
+                        style={
+                          isMobile
+                            ? { width: "100vw", left: "-16px" }
+                            : undefined
+                        }
+                      >
+                        {isMobile && (
+                          <div className="sticky top-0 flex items-center justify-between p-4 border-b border-secondary-200 dark:border-secondary-700 bg-white dark:bg-secondary-800">
+                            <h3 className="text-base font-semibold">
+                              Select Language
+                            </h3>
+                            <button
+                              onClick={() => setIsLanguageOpen(false)}
+                              className="p-1 text-secondary-500 hover:text-secondary-700"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+                        )}
+                        <div className="py-1">
+                          {LANGUAGE_OPTIONS.map((lang) => (
+                            <button
+                              key={lang.code}
+                              onClick={() => {
+                                setSelectedLanguage(lang.name);
+                                setIsLanguageOpen(false);
+                              }}
+                              className={`w-full px-4 ${
+                                isMobile ? "py-4" : "py-2"
+                              } text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between ${
+                                selectedLanguage === lang.name
+                                  ? "bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300"
+                                  : "text-secondary-700 dark:text-secondary-300"
+                              }`}
+                            >
+                              <div className="flex items-center">
+                                <span>{lang.name}</span>
+                                <span className="text-xs text-secondary-500 ml-2">
+                                  {lang.code}
+                                </span>
+                              </div>
+                              {selectedLanguage === lang.name && (
+                                <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
