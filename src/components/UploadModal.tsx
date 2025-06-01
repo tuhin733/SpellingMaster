@@ -64,6 +64,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [formatDetected, setFormatDetected] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768); // md breakpoint
   const languageRef = useRef<HTMLDivElement>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -309,6 +310,15 @@ const UploadModal: React.FC<UploadModalProps> = ({
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   if (!isOpen) return null;
 
   // Get the color class and icon for file type
@@ -426,19 +436,36 @@ const UploadModal: React.FC<UploadModalProps> = ({
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            initial={{
+              opacity: 0,
+              y: isMobile ? "100%" : "4%",
+              scale: isMobile ? 1 : 0.95,
+            }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{
+              opacity: 0,
+              y: isMobile ? "100%" : "4%",
+              scale: isMobile ? 1 : 0.95,
+            }}
             transition={{
               duration: 0.2,
               ease: "easeInOut",
             }}
-            className="relative w-full max-w-xl bg-white rounded-xl shadow-xl dark:bg-secondary-800 p-5"
+            className={`relative w-full ${
+              isMobile ? "max-h-[90vh] rounded-t-xl" : "max-w-xl rounded-xl m-4"
+            } bg-white shadow-xl dark:bg-secondary-800`}
           >
+            {/* Mobile drag indicator */}
+            {isMobile && (
+              <div className="flex justify-center pt-2 pb-1">
+                <div className="w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600" />
+              </div>
+            )}
+
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between p-4">
               <h2 className="text-lg font-bold text-secondary-900 dark:text-secondary-100">
                 Upload Custom Wordlist
               </h2>
@@ -454,7 +481,11 @@ const UploadModal: React.FC<UploadModalProps> = ({
             </div>
 
             {/* Main content */}
-            <div className="space-y-4">
+            <div
+              className={`space-y-4 p-4 ${
+                isMobile ? "overflow-y-auto max-h-[calc(90vh-120px)]" : ""
+              }`}
+            >
               {/* Drag and drop zone */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
