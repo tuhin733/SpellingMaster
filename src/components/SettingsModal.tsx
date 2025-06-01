@@ -218,8 +218,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
       >
         <div className="flex h-full">
           {/* Sidebar */}
-          <div className="w-56 bg-gray-50/80 dark:bg-secondary-900/80 backdrop-blur border-r border-gray-200/80 dark:border-gray-700/30">
-            <div className="p-4 border-b border-gray-200/80 dark:border-gray-700/30">
+          <div className="w-56 bg-gray-50/80 dark:bg-secondary-900/80 backdrop-blur border-r border-gray-200/80 dark:border-gray-600/50">
+            <div className="p-4 border-b border-gray-200/80 dark:border-gray-600/50">
               <div className="flex items-center space-x-2">
                 <Settings2 className="w-5 h-5 text-blue-500" />
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
@@ -368,7 +368,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                       {visibleWordlists.map((wordlist) => (
                         <div
                           key={wordlist.id}
-                          className="p-4 bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30"
+                          className="p-4 bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-600/50"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -449,7 +449,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                       </div>
 
                       {/* Description */}
-                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30 p-4">
+                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-600/50 p-4">
                         <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed text-center">
                           Spelling Master is an interactive learning application
                           designed to help users improve their spelling skills
@@ -459,7 +459,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                       </div>
 
                       {/* Features List */}
-                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30 p-4">
+                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-600/50 p-4">
                         <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
                           Key Features
                         </h2>
@@ -503,7 +503,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                       </div>
 
                       {/* Help & FAQ Section */}
-                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30 p-4">
+                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-600/50 p-4">
                         <div className="flex items-start space-x-4 mb-6">
                           <div className="flex-shrink-0">
                             <HelpCircle className="w-6 h-6 text-blue-500 dark:text-blue-400" />
@@ -530,7 +530,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                           {faqs.map((faq, index) => (
                             <div
                               key={index}
-                              className="border-b border-gray-200 dark:border-gray-700/50 last:border-0"
+                              className="border-b border-gray-200 dark:border-gray-600 last:border-0"
                             >
                               <button
                                 onClick={() => toggleFAQ(index)}
@@ -568,7 +568,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                       </div>
 
                       {/* Credits Section */}
-                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30 p-4">
+                      <div className="bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-600/50 p-4">
                         <div className="text-center">
                           <div className="flex items-center justify-center mb-4">
                             <p className="text-gray-600 dark:text-gray-300">
@@ -748,7 +748,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
   }, [isOpen]);
 
   return (
-    <div className="flex items-center justify-between p-4 bg-white dark:bg-secondary-800/50 border-b border-gray-200/80 dark:border-gray-700">
+    <div className="flex items-center justify-between p-4 bg-white dark:bg-secondary-800/50 border-b border-gray-200/80 dark:border-gray-600">
       <div className="flex items-center gap-2.5">
         <div className="text-blue-500">{icon}</div>
         <span className="text-sm text-gray-800 dark:text-gray-100">
@@ -784,7 +784,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
         {isOpen && (
           <div
             ref={dropdownRef}
-            className="absolute right-0 mt-1 w-full min-w-[120px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden animate-in fade-in duration-200 z-50"
+            className="absolute right-0 mt-1 w-full min-w-[120px] bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 overflow-hidden animate-in fade-in duration-200 z-50"
           >
             <div className="py-1">
               {options.map((option) => (
@@ -829,7 +829,7 @@ const SettingToggle: React.FC<SettingToggleProps> = ({
   value,
   onChange,
 }) => (
-  <div className="flex items-center justify-between p-4 bg-white dark:bg-secondary-800/50 border-b border-gray-200/80 dark:border-gray-700">
+  <div className="flex items-center justify-between p-4 bg-white dark:bg-secondary-800/50 border-b border-gray-200/80 dark:border-gray-600">
     <div className="flex items-center gap-2.5">
       <div
         className={value ? "text-blue-500" : "text-gray-400 dark:text-gray-500"}
@@ -871,7 +871,7 @@ const DangerButton: React.FC<DangerButtonProps> = ({
 }) => (
   <button
     onClick={onClick}
-    className="w-full p-4 bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30 hover:bg-gray-50 dark:hover:bg-secondary-800 transition-colors text-left"
+    className="w-full p-4 bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-600/50 hover:bg-gray-50 dark:hover:bg-secondary-800 transition-colors text-left"
   >
     <div className="flex items-center gap-3">
       <div className={variant === "danger" ? "text-red-500" : "text-blue-500"}>
