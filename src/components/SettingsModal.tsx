@@ -81,6 +81,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const { clearProgress, clearAllData } = useProgress();
   const [activeTab, setActiveTab] = useState<TabType>("appearance");
   const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768); // md breakpoint
 
   const [isResetProgressOpen, setIsResetProgressOpen] = useState(false);
   const [isResetAllDataOpen, setIsResetAllDataOpen] = useState(false);
@@ -198,55 +199,93 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex md:items-center justify-center bg-black/50 backdrop-blur-sm md:p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: isMobile ? "100%" : 20 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
+        exit={{ opacity: 0, y: isMobile ? "100%" : 20 }}
         transition={{
           duration: 0.3,
           ease: "easeInOut",
         }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl bg-white dark:bg-secondary-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden h-[450px]"
+        className={`relative bg-white dark:bg-secondary-800 shadow-2xl flex flex-col overflow-hidden ${
+          isMobile
+            ? "w-full h-[85vh] rounded-t-2xl mt-auto"
+            : "w-full max-w-4xl h-[450px] rounded-2xl"
+        }`}
       >
-        <div className="flex h-full">
-          {/* Sidebar */}
-          <div className="w-56 bg-gray-50/80 dark:bg-secondary-900/80 backdrop-blur border-r border-gray-200/80 dark:border-gray-600/50">
-            <div className="p-4 border-b border-gray-200/80 dark:border-gray-600/50">
-              <div className="flex items-center space-x-2">
-                <Settings2 className="w-5 h-5 text-blue-500" />
-                <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                  Settings
-                </h2>
+        {/* Mobile drag indicator */}
+        {isMobile && (
+          <div className="flex justify-center pt-2 pb-1">
+            <div className="w-12 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600" />
+          </div>
+        )}
+
+        <div className={`flex h-full ${isMobile ? "flex-col" : ""}`}>
+          {/* Sidebar - Convert to top tabs on mobile */}
+          <div
+            className={`${
+              isMobile
+                ? "w-full overflow-x-auto flex-none border-b"
+                : "w-56 bg-gray-50/80 dark:bg-secondary-900/80 backdrop-blur border-r"
+            } border-gray-200/80 dark:border-gray-600/50`}
+          >
+            {!isMobile && (
+              <div className="p-4 border-b border-gray-200/80 dark:border-gray-600/50">
+                <div className="flex items-center space-x-2">
+                  <Settings2 className="w-5 h-5 text-blue-500" />
+                  <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                    Settings
+                  </h2>
+                </div>
               </div>
-            </div>
-            <nav className="p-2 space-y-1">
+            )}
+            <nav className={`${isMobile ? "flex p-1" : "p-2 space-y-1"}`}>
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                  className={`${
+                    isMobile
+                      ? "flex-none px-4 py-2.5 mx-1 text-sm rounded-lg whitespace-nowrap"
+                      : "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg"
+                  } transition-all duration-200 ${
                     activeTab === tab.id
                       ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 shadow-sm"
                       : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-secondary-800/50"
                   }`}
                 >
-                  {tab.icon}
-                  <span className="font-medium">{tab.label}</span>
+                  {isMobile ? (
+                    <span className="font-medium">{tab.label}</span>
+                  ) : (
+                    <>
+                      {tab.icon}
+                      <span className="font-medium">{tab.label}</span>
+                    </>
+                  )}
                 </button>
               ))}
             </nav>
           </div>
 
           {/* Content */}
-          <div className="flex-1 flex flex-col h-full modal-content relative">
+          <div className="flex-1 flex flex-col h-full modal-content relative overflow-hidden">
             <div className="flex items-center justify-between p-4">
               <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100">
                 {tabs.find((tab) => tab.id === activeTab)?.label}
