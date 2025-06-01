@@ -14,8 +14,6 @@ const LevelsPage = lazy(() => import("./pages/LevelsPage"));
 const FlashcardPage = lazy(() => import("./pages/FlashcardPage"));
 const ResultsPage = lazy(() => import("./pages/ResultsPage"));
 const StatisticsPage = lazy(() => import("./pages/StatisticsPage"));
-const AboutPage = lazy(() => import("./pages/AboutPage"));
-const HelpCenterPage = lazy(() => import("./pages/HelpCenterPage"));
 
 // Add global styles
 import "./index.css";
@@ -97,8 +95,6 @@ const AppRoutes: React.FC = () => {
               />
 
               <Route path="/statistics" element={<StatisticsPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/help" element={<HelpCenterPage />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>

@@ -247,7 +247,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
 
           {/* Content */}
           <div className="flex-1 flex flex-col h-full modal-content relative">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200/80 dark:border-gray-700/30">
+            <div className="flex items-center justify-between p-4">
               <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100">
                 {tabs.find((tab) => tab.id === activeTab)?.label}
               </h3>
@@ -272,7 +272,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                   className="space-y-4"
                 >
                   {activeTab === "appearance" && (
-                    <div className="space-y-4">
+                    <div>
                       <SettingItem
                         icon={<Palette className="w-5 h-5 text-blue-500" />}
                         title="Theme"
@@ -324,7 +324,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                   )}
 
                   {activeTab === "study" && (
-                    <div className="space-y-4">
+                    <div>
                       <SettingItem
                         icon={<BookMarked className="w-5 h-5 text-blue-500" />}
                         title="Words Per Session"
@@ -748,7 +748,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
   }, [isOpen]);
 
   return (
-    <div className="flex items-center justify-between p-3 bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30">
+    <div className="flex items-center justify-between p-4 bg-white dark:bg-secondary-800/50 border-b border-gray-200/80 dark:border-gray-700">
       <div className="flex items-center gap-2.5">
         <div className="text-blue-500">{icon}</div>
         <span className="text-sm text-gray-800 dark:text-gray-100">
@@ -759,10 +759,9 @@ const SettingItem: React.FC<SettingItemProps> = ({
         <button
           ref={buttonRef}
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-between gap-2 px-3 py-1.5 text-sm transition-all duration-200 rounded-lg shadow-sm border
-            bg-gray-50 text-gray-700 hover:bg-gray-100 
-            dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700
-            border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+          className="flex items-center justify-between gap-2 px-3 py-1.5 text-sm transition-all duration-200 rounded-lg 
+             text-gray-700 hover:bg-gray-100 
+            dark:text-gray-200 dark:hover:bg-gray-700"
         >
           <span>{selectedOption.label}</span>
           <svg
@@ -830,7 +829,7 @@ const SettingToggle: React.FC<SettingToggleProps> = ({
   value,
   onChange,
 }) => (
-  <div className="flex items-center justify-between p-3 bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-700/30">
+  <div className="flex items-center justify-between p-4 bg-white dark:bg-secondary-800/50 border-b border-gray-200/80 dark:border-gray-700">
     <div className="flex items-center gap-2.5">
       <div
         className={value ? "text-blue-500" : "text-gray-400 dark:text-gray-500"}
