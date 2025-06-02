@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useApp } from "../contexts/AppContext";
 import { useProgress } from "../contexts/ProgressContext";
 import ConfirmDialog from "./ConfirmDialog";
-import Toast from "./Toast";
+import Toast, { ToastType } from "./Toast";
 import {
   Text,
   XCircle,
@@ -94,9 +94,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const [selectedWordlist, setSelectedWordlist] = useState<Wordlist | null>(
     null
   );
-  const [toast, setToast] = useState<{ message: string; isVisible: boolean }>({
+  const [toast, setToast] = useState<{
+    message: string;
+    isVisible: boolean;
+    type?: ToastType;
+  }>({
     message: "",
     isVisible: false,
+    type: "info",
   });
   const [isExpanded, setIsExpanded] = useState(false);
   const ITEMS_PER_PAGE = 3;
@@ -144,8 +149,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     setExpandedFaqIndex(expandedFaqIndex === index ? null : index);
   };
 
-  const showToast = (message: string) => {
-    setToast({ message, isVisible: true });
+  const showToast = (message: string, type: ToastType = "info") => {
+    setToast({ message, isVisible: true, type });
   };
 
   const closeToast = () => {
@@ -154,7 +159,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
 
   const handleSettingChange = (key: string, value: any) => {
     updateSettings({ [key]: value });
-    showToast(`${key.charAt(0).toUpperCase() + key.slice(1)} updated`);
     if (key === "enableSound" && value) playSound("success", true);
   };
 
@@ -162,12 +166,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     try {
       await db.deleteUserWordlist(wordlistId);
       await refreshWordlists();
-      showToast("Wordlist removed successfully");
+      showToast("Wordlist deleted successfully", "success");
       setIsDeleteWordlistOpen(false);
       setSelectedWordlistId(null);
       setSelectedWordlist(null);
     } catch (error) {
-      showToast("Failed to remove wordlist");
+      showToast("Failed to delete wordlist", "error");
     }
   };
 
@@ -177,10 +181,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         await db.deleteUserWordlist(wordlist.id);
       }
       await refreshWordlists();
-      showToast("All wordlists have been removed successfully");
+      showToast("All wordlists have been deleted successfully", "success");
       setIsDeleteAllWordlistsOpen(false);
     } catch (error) {
-      showToast("Failed to remove wordlists");
+      showToast("Failed to delete wordlists", "error");
     }
   };
 
@@ -653,7 +657,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         onConfirm={() => {
           clearProgress();
           setIsResetProgressOpen(false);
-          showToast("Progress has been reset successfully");
+          showToast("Progress has been reset successfully", "success");
         }}
         onCancel={() => setIsResetProgressOpen(false)}
       />
@@ -665,7 +669,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         onConfirm={() => {
           clearAllData();
           setIsResetAllDataOpen(false);
-          showToast("All data has been reset successfully");
+          showToast("All data has been reset successfully", "success");
         }}
         onCancel={() => setIsResetAllDataOpen(false)}
       />
@@ -710,6 +714,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         message={toast.message}
         isVisible={toast.isVisible}
         onClose={closeToast}
+        type={toast.type}
       />
     </div>
   );
@@ -833,13 +838,11 @@ const SettingItem: React.FC<SettingItemProps> = ({
                     onChange(option.value);
                     setIsOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-1.5 text-sm transition-all duration-200 flex items-center justify-between
-                    ${
-                      value === option.value
-                        ? "bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
-                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
-                    }
-                  `}
+                  className={`w-full text-left px-3 py-1.5 text-sm transition-all duration-200 flex items-center justify-between ${
+                    value === option.value
+                      ? "text-gray-700 dark:text-gray-200"
+                      : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
+                  }`}
                 >
                   <span>{option.label}</span>
                   {value === option.value && (

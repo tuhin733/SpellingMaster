@@ -4,7 +4,7 @@ import { AppProvider, useApp } from "./contexts/AppContext";
 import { ProgressProvider } from "./contexts/ProgressContext";
 import { TranslationProvider } from "./contexts/TranslationContext";
 import ErrorBoundary from "./components/ErrorBoundary";
-import Toast from "./components/Toast";
+import Toast, { ToastType } from "./components/Toast";
 import Preloader from "./components/Preloader";
 import { AlertTriangle } from "lucide-react";
 
@@ -23,9 +23,11 @@ const AppRoutes: React.FC = () => {
   const [globalError, setGlobalError] = useState<{
     message: string;
     isVisible: boolean;
+    type: ToastType;
   }>({
     message: "",
     isVisible: false,
+    type: "error",
   });
 
   // Ensure body gets correct theme class
@@ -42,6 +44,7 @@ const AppRoutes: React.FC = () => {
     setGlobalError({
       message,
       isVisible: true,
+      type: "error",
     });
   };
 
@@ -106,6 +109,7 @@ const AppRoutes: React.FC = () => {
         isVisible={globalError.isVisible}
         onClose={closeError}
         duration={5000}
+        type={globalError.type}
       />
     </>
   );

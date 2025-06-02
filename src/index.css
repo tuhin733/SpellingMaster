@@ -125,6 +125,20 @@
     @apply pt-24 sm:pt-28;
   }
 
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    @apply w-1.5 bg-transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent dark:bg-gray-800/20;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400/60 dark:bg-gray-500 rounded-full;
+  }
+
+  /* Animation classes */
   .animation-fade-in-up {
     animation: fadeInUp 0.3s ease-out forwards;
   }

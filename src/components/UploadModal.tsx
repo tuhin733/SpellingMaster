@@ -66,6 +66,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768); // md breakpoint
   const languageRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -111,6 +112,26 @@ const UploadModal: React.FC<UploadModalProps> = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Close modal when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   // Handle drag events
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -362,6 +383,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm">
           <motion.div
+            ref={modalRef}
             initial={{
               opacity: 0,
               y: isMobile ? "100%" : "4%",
@@ -566,12 +588,15 @@ const UploadModal: React.FC<UploadModalProps> = ({
                         className={`absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-secondary-200 dark:bg-secondary-800 dark:border-secondary-700 ${
                           isMobile
                             ? "fixed inset-x-0 bottom-0 rounded-b-none max-h-[50vh]"
-                            : "max-h-60"
-                        } overflow-y-auto`}
+                            : "max-h-[200px]"
+                        } overflow-y-auto scrollbar-thin [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-track]:bg-gray-800/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-400/60 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500`}
                         style={
                           isMobile
                             ? { width: "100vw", left: "-16px" }
-                            : undefined
+                            : {
+                                maxHeight:
+                                  "min(200px, calc(100vh - 100% - 1rem))",
+                              }
                         }
                       >
                         {isMobile && (
@@ -599,7 +624,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
                                 isMobile ? "py-4" : "py-2"
                               } text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between ${
                                 selectedLanguage === lang.name
-                                  ? "bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300"
+                                  ? "text-secondary-700 dark:text-secondary-300"
                                   : "text-secondary-700 dark:text-secondary-300"
                               }`}
                             >
@@ -610,7 +635,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
                                 </span>
                               </div>
                               {selectedLanguage === lang.name && (
-                                <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                                <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                               )}
                             </button>
                           ))}

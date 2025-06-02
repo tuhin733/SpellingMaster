@@ -280,18 +280,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
                       onFilterChange?.(option.value);
                       setIsFilterOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-3 sm:py-2.5 text-sm transition-all duration-200 flex items-center justify-between
-                    ${dropdownPosition.isMobile ? "py-4" : "py-2.5"}
+                    className={`w-full text-left px-3 py-1.5 text-sm transition-all duration-200 flex items-center justify-between
                     ${
                       selectedFilter === option.value
-                        ? "bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                        ? "text-gray-700 dark:text-gray-200"
                         : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
                     }
                   `}
                   >
                     <span>{option.label}</span>
                     {selectedFilter === option.value && (
-                      <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                      <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                     )}
                   </button>
                 ))}

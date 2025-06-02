@@ -138,7 +138,7 @@ const Header: React.FC<HeaderProps> = ({
             position="bottom"
           >
             <button
-              className="inline-flex p-3 sm:p-2.5 rounded-full bg-primary-50 hover:bg-primary-100/90 shadow-sm hover:shadow-md active:bg-primary-200 text-primary-600 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500/50 border-0 dark:bg-primary-800/30 dark:hover:bg-primary-700/40 dark:active:bg-primary-600/50 dark:text-primary-200"
+              className="inline-flex p-3 sm:p-2.5 rounded-full text-secondary-600 transition-all duration-300 transform hover:scale-110 focus:outline-none  border-0 dark:text-secondary-200"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}

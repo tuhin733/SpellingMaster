@@ -434,13 +434,13 @@ const StatisticsPage: React.FC = () => {
                 }}
                 className={`w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between ${
                   selectedLanguage === "all"
-                    ? "bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300"
+                    ? "text-secondary-700 dark:text-secondary-300"
                     : "text-secondary-700 dark:text-secondary-300"
                 }`}
               >
                 <span>All Languages</span>
                 {selectedLanguage === "all" && (
-                  <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 )}
               </button>
               {LANGUAGE_OPTIONS.map((lang) => (
@@ -452,7 +452,7 @@ const StatisticsPage: React.FC = () => {
                   }}
                   className={`w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between ${
                     selectedLanguage === lang.code
-                      ? "bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300"
+                      ? "text-secondary-700 dark:text-secondary-300"
                       : "text-secondary-700 dark:text-secondary-300"
                   }`}
                 >
@@ -463,7 +463,7 @@ const StatisticsPage: React.FC = () => {
                     </span>
                   </div>
                   {selectedLanguage === lang.code && (
-                    <Check className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                    <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                   )}
                 </button>
               ))}
