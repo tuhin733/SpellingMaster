@@ -43,7 +43,7 @@ If you'd like to contribute to SpellingMaster, please:
 3. Make your changes
 4. Submit a pull request
 
-📝 [Contributing Guide](https://github.com/tuhin733/SpellingMaster/blob/main/CONTRIBUTING.md)
+[More...](https://github.com/tuhin733/SpellingMaster/blob/main/CONTRIBUTING.md)
 
 ## License
 
