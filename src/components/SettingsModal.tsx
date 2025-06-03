@@ -20,7 +20,7 @@ import {
   Check,
   Info,
   Github,
-  Globe,
+  MessageSquare,
   Heart,
   Mail,
   HelpCircle,
@@ -630,7 +630,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                             </Tooltip>
                             <Tooltip content="Documentation" position="top">
                               <a
-                                href="https://github.com/tuhin733/SpellingMaster/wiki"
+                                href="https://github.com/tuhin733/SpellingMaster/blob/main/docs/getting-started.md"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
@@ -655,7 +655,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                 rel="noopener noreferrer"
                                 className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
                               >
-                                <Globe className="w-5 h-5" />
+                                <MessageSquare className="w-5 h-5" />
                               </a>
                             </Tooltip>
                           </div>
