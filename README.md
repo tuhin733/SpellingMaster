@@ -2,6 +2,13 @@
 
 A modern web application designed to help users improve their spelling skills through interactive exercises and practice sessions.
 
+## Quick Links
+
+- 📚 [Documentation](https://github.com/tuhin733/SpellingMaster/blob/main/docs/getting-started.md)
+- 💬 [Community Discussions](https://github.com/tuhin733/SpellingMaster/discussions)
+- 🐛 [Report Issues](https://github.com/tuhin733/SpellingMaster/issues)
+- 📝 [Contributing Guide](https://github.com/tuhin733/SpellingMaster/blob/main/CONTRIBUTING.md)
+
 ## Visit Website
 
 🌐 [SpellingMaster Website](https://spelling-master.vercel.app/)
@@ -36,9 +43,11 @@ If you'd like to contribute to SpellingMaster, please:
 3. Make your changes
 4. Submit a pull request
 
+📝 [Contributing Guide](https://github.com/tuhin733/SpellingMaster/blob/main/CONTRIBUTING.md)
+
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See our [License](https://github.com/tuhin733/SpellingMaster/blob/main/LICENSE) for details.
 
 ## Acknowledgments
 
