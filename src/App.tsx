@@ -6,6 +6,7 @@ import { TranslationProvider } from "./contexts/TranslationContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Toast, { ToastType } from "./components/Toast";
 import { AlertTriangle } from "lucide-react";
+import Spinner from "./components/Spinner";
 
 // Lazy-load pages for code splitting
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -52,7 +53,7 @@ const AppRoutes: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="min-h-screen bg-gray-50 dark:bg-secondary-900" />;
+    return <Spinner />;
   }
 
   return (
@@ -80,11 +81,7 @@ const AppRoutes: React.FC = () => {
             </div>
           }
         >
-          <Suspense
-            fallback={
-              <div className="min-h-screen bg-gray-50 dark:bg-secondary-900" />
-            }
-          >
+          <Suspense fallback={<Spinner />}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/levels/:wordlistId" element={<LevelsPage />} />

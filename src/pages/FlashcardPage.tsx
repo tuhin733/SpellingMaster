@@ -9,6 +9,7 @@ import { FlashcardResult } from "../types";
 import { AlertTriangle, Headphones, Clock } from "lucide-react";
 import { AlertMessage, ProgressBar, Card } from "../components/UIComponents";
 import { AchievementToast } from "../components";
+import Spinner from "../components/Spinner";
 
 const FlashcardPage: React.FC = () => {
   const { wordlistId, level } = useParams<{
@@ -316,7 +317,11 @@ const FlashcardPage: React.FC = () => {
     return null;
   }
 
-  if (isLoading || levelWords.length === 0) {
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  if (levelWords.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col dark:bg-secondary-900">
         <Header

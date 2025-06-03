@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useProgress } from "../contexts/ProgressContext";
 import { useApp } from "../contexts/AppContext";
 import Header from "../components/Header";
+import Spinner from "../components/Spinner";
 import {
   BarChart,
   LineChart,
@@ -73,21 +74,13 @@ const StatisticsPage: React.FC = () => {
   );
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const languageRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Close language dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        languageRef.current &&
-        !languageRef.current.contains(event.target as Node)
-      ) {
-        setIsLanguageOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // Language options (based on available wordlists)
+  const languageOptions = React.useMemo(() => {
+    const languages = wordlists.map((list) => list.language);
+    return ["all", ...new Set(languages)];
+  }, [wordlists]);
 
   // Filter results by language and time period
   const filteredResults = React.useMemo(() => {
@@ -124,11 +117,37 @@ const StatisticsPage: React.FC = () => {
     return results;
   }, [levelResults, selectedLanguage, timePeriod]);
 
-  // Language options (based on available wordlists)
-  const languageOptions = React.useMemo(() => {
-    const languages = wordlists.map((list) => list.language);
-    return ["all", ...new Set(languages)];
-  }, [wordlists]);
+  // Close language dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        languageRef.current &&
+        !languageRef.current.contains(event.target as Node)
+      ) {
+        setIsLanguageOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        // Give time for the charts to initialize
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   // Prepare data for charts
   const prepareDailyProgressData = () => {

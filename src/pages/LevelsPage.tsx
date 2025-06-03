@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProgress } from "../contexts/ProgressContext";
 import { useApp } from "../contexts/AppContext"; // Import if wordlists are in AppContext
@@ -7,12 +7,31 @@ import LevelCard from "../components/LevelCard";
 import { ArrowLeft } from "lucide-react";
 import CircleProgress from "../components/CircleProgress";
 import { StreakDisplay } from "../components";
+import Spinner from "../components/Spinner";
 
 const LevelsPage: React.FC = () => {
   const { wordlistId } = useParams<{ wordlistId: string }>();
   const navigate = useNavigate();
   const { userProgress } = useProgress();
   const { wordlists } = useApp();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        // Short delay to prevent flickering
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   const wordlist = wordlists.find((w) => w.id === wordlistId);
 

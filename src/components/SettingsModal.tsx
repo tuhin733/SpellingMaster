@@ -15,8 +15,6 @@ import {
   Trash2,
   BookMarked,
   Clock,
-  BarChart,
-  X,
   Palette,
   Bell,
   Check,
@@ -32,7 +30,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { playSound } from "../utils/sound";
 import * as db from "../utils/db";
 import { Wordlist } from "../types";
-import ReactDOM from "react-dom";
 import Tooltip from "./Tooltip";
 
 interface SettingsModalProps {
@@ -621,21 +618,64 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                             </p>
                           </div>
                           <div className="flex items-center justify-center space-x-4">
+                            <Tooltip content="Github" position="top">
+                              <a
+                                href="https://github.com/tuhin733/SpellingMaster"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                              >
+                                <Github className="w-5 h-5" />
+                              </a>
+                            </Tooltip>
+                            <Tooltip content="Documentation" position="top">
+                              <a
+                                href="https://github.com/tuhin733/SpellingMaster/wiki"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                              >
+                                <FileText className="w-5 h-5" />
+                              </a>
+                            </Tooltip>
+                            <Tooltip content="Report Issues" position="top">
+                              <a
+                                href="https://github.com/tuhin733/SpellingMaster/issues"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                              >
+                                <AlertTriangle className="w-5 h-5" />
+                              </a>
+                            </Tooltip>
+                            <Tooltip content="Discussions" position="top">
+                              <a
+                                href="https://github.com/tuhin733/SpellingMaster/discussions"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                              >
+                                <Globe className="w-5 h-5" />
+                              </a>
+                            </Tooltip>
+                          </div>
+                          <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
                             <a
-                              href="https://github.com/tuhin733/SpellingMaster"
+                              href="https://github.com/tuhin733/SpellingMaster/blob/main/CONTRIBUTING.md"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                              className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
                             >
-                              <Github className="w-5 h-5" />
+                              Contribute to this project
                             </a>
+                            {" • "}
                             <a
-                              href="https://spelling-master.vercel.app"
+                              href="https://github.com/tuhin733/SpellingMaster/blob/main/LICENSE"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                              className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
                             >
-                              <Globe className="w-5 h-5" />
+                              License
                             </a>
                           </div>
                         </div>

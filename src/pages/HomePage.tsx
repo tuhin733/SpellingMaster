@@ -6,6 +6,7 @@ import LanguageCard from "../components/LanguageCard";
 import { Book, Search, Sparkles } from "lucide-react";
 import { UploadButton, UploadModal } from "../components";
 import { Wordlist } from "../types";
+import Spinner from "../components/Spinner";
 
 const HomePage: React.FC = () => {
   const { wordlists, isLoading, refreshWordlists } = useApp();
@@ -54,6 +55,10 @@ const HomePage: React.FC = () => {
       setIsUploadModalOpen(false);
     }
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col transition-colors duration-300 dark:from-secondary-900 dark:to-secondary-950">
