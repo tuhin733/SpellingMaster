@@ -5,7 +5,6 @@ import { ProgressProvider } from "./contexts/ProgressContext";
 import { TranslationProvider } from "./contexts/TranslationContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Toast, { ToastType } from "./components/Toast";
-import Preloader from "./components/Preloader";
 import { AlertTriangle } from "lucide-react";
 
 // Lazy-load pages for code splitting
@@ -52,11 +51,8 @@ const AppRoutes: React.FC = () => {
     setGlobalError((prev) => ({ ...prev, isVisible: false }));
   };
 
-  // Note: Global error handler has been moved to main.tsx to avoid duplicate registration
-  // Local error handling can still use the showError function
-
   if (isLoading) {
-    return <Preloader message="Initializing application..." />;
+    return <div className="min-h-screen bg-gray-50 dark:bg-secondary-900" />;
   }
 
   return (
@@ -84,7 +80,11 @@ const AppRoutes: React.FC = () => {
             </div>
           }
         >
-          <Suspense fallback={<Preloader message="Loading page..." />}>
+          <Suspense
+            fallback={
+              <div className="min-h-screen bg-gray-50 dark:bg-secondary-900" />
+            }
+          >
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/levels/:wordlistId" element={<LevelsPage />} />
@@ -96,7 +96,6 @@ const AppRoutes: React.FC = () => {
                 path="/results/:wordlistId/:level"
                 element={<ResultsPage />}
               />
-
               <Route path="/statistics" element={<StatisticsPage />} />
             </Routes>
           </Suspense>

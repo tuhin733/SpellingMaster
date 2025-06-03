@@ -4,7 +4,6 @@ import { useApp } from "../contexts/AppContext";
 import { useProgress } from "../contexts/ProgressContext";
 import Header from "../components/Header";
 import Flashcard from "../components/Flashcard";
-import Preloader from "../components/Preloader";
 import { useLoading } from "../hooks/useLoading";
 import { FlashcardResult } from "../types";
 import { AlertTriangle, Headphones, Clock } from "lucide-react";
@@ -322,13 +321,11 @@ const FlashcardPage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex flex-col dark:bg-secondary-900">
         <Header
           showBack
-          title={`Level ${level} - ${wordlist?.language || "Loading..."}`}
+          title={`Level ${level} - ${wordlist?.language || ""}`}
           showSettings={false}
           showStats={false}
         />
-        <div className="flex-1 flex items-center justify-center">
-          <Preloader fullscreen={false} message="Loading flashcards..." />
-        </div>
+        <div className="flex-1" />
       </div>
     );
   }

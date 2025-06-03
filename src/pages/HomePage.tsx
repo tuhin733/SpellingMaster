@@ -3,7 +3,6 @@ import { useApp } from "../contexts/AppContext";
 import Header from "../components/Header";
 import SearchBar, { FilterOption } from "../components/SearchBar";
 import LanguageCard from "../components/LanguageCard";
-import Preloader from "../components/Preloader";
 import { Book, Search, Sparkles } from "lucide-react";
 import { UploadButton, UploadModal } from "../components";
 import { Wordlist } from "../types";
