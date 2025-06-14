@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users collection and all its subcollections
+    match /users/{userId} {
+      // Base user document
+      allow read, write: if isOwner(userId);
+
+      // Progress subcollection
+      match /progress/{language} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Settings subcollection
+      match /settings/{settingId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Statistics subcollection
+      match /statistics/{statsId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Results subcollection
+      match /results/{resultId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && 
+          request.resource.data.createdAt == request.time;
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+} 

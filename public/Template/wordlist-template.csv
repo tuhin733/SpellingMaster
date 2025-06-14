@@ -1,0 +1,11 @@
+# Wordlist Template
+# Language: Enter Language Here
+# Language Code: Enter Language Code Here
+# Description: Enter a brief description of the wordlist's purpose
+# Format: One word per line
+# Lines starting with # are comments and will be ignored
+
+EnterWord1
+EnterWord2
+EnterWord3
+...add as many words as needed

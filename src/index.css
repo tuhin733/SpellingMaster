@@ -1,0 +1,384 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import url("https://rsms.me/inter/inter.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Inter", system-ui, sans-serif;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  @supports (font-variation-settings: normal) {
+    html {
+      font-family: "Inter var", system-ui, sans-serif;
+    }
+  }
+
+  body {
+    @apply bg-secondary-50 text-secondary-800 transition-colors duration-200 overflow-x-hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+
+  /* Font size utility classes */
+  .text-size-small {
+    --base-size: 0.875;
+  }
+
+  .text-size-medium {
+    --base-size: 1;
+  }
+
+  .text-size-large {
+    --base-size: 1.125;
+  }
+
+  /* Apply font size scaling */
+  .text-size-small h1 {
+    @apply text-2xl;
+  }
+  .text-size-medium h1 {
+    @apply text-3xl;
+  }
+  .text-size-large h1 {
+    @apply text-4xl;
+  }
+
+  .text-size-small h2 {
+    @apply text-xl;
+  }
+  .text-size-medium h2 {
+    @apply text-2xl;
+  }
+  .text-size-large h2 {
+    @apply text-3xl;
+  }
+
+  .text-size-small h3 {
+    @apply text-lg;
+  }
+  .text-size-medium h3 {
+    @apply text-xl;
+  }
+  .text-size-large h3 {
+    @apply text-2xl;
+  }
+
+  .text-size-small h4 {
+    @apply text-base;
+  }
+  .text-size-medium h4 {
+    @apply text-lg;
+  }
+  .text-size-large h4 {
+    @apply text-xl;
+  }
+
+  .text-size-small p {
+    @apply text-sm;
+  }
+  .text-size-medium p {
+    @apply text-base;
+  }
+  .text-size-large p {
+    @apply text-lg;
+  }
+
+  .text-size-small .text-body {
+    @apply text-sm;
+  }
+  .text-size-medium .text-body {
+    @apply text-base;
+  }
+  .text-size-large .text-body {
+    @apply text-lg;
+  }
+
+  .text-size-small .text-small {
+    @apply text-xs;
+  }
+  .text-size-medium .text-small {
+    @apply text-sm;
+  }
+  .text-size-large .text-small {
+    @apply text-base;
+  }
+
+  /* Remove tap highlight on iOS */
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Typography scale */
+  h1 {
+    @apply text-3xl font-bold text-secondary-900 dark:text-secondary-50;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold text-secondary-900 dark:text-secondary-50;
+  }
+
+  h3 {
+    @apply text-xl font-semibold text-secondary-800 dark:text-secondary-100;
+  }
+
+  h4 {
+    @apply text-lg font-medium text-secondary-800 dark:text-secondary-100;
+  }
+
+  /* Dark mode styles */
+  .dark body {
+    @apply bg-secondary-900 text-secondary-100;
+  }
+}
+
+@layer components {
+  /* Card variants */
+  .card {
+    @apply bg-white rounded-xl shadow-card border border-secondary-100 p-4 sm:p-5 transition-all duration-200 hover:shadow-elevated dark:bg-secondary-800 dark:border-secondary-700 dark:text-secondary-100;
+  }
+
+  .card-flat {
+    @apply bg-white rounded-xl border border-secondary-100 p-4 sm:p-5 transition-all duration-200 dark:bg-secondary-800 dark:border-secondary-700 dark:text-secondary-100;
+  }
+
+  /* Layout containers */
+  .container-content {
+    @apply container mx-auto px-3 sm:px-4 py-3 sm:py-5 max-w-6xl;
+  }
+
+  /* Focus styles */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50;
+  }
+
+  /* Form elements */
+  .form-input {
+    @apply w-full px-3 py-2 bg-white border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-secondary-800 dark:bg-secondary-800 dark:border-secondary-700 dark:text-secondary-100;
+  }
+
+  .form-input-error {
+    @apply border-error-500 focus:ring-error-500;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-secondary-700 mb-1 dark:text-secondary-200;
+  }
+
+  .form-error {
+    @apply mt-1 text-sm text-error-600;
+  }
+
+  /* Badge variants */
+  .badge-primary {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200;
+  }
+
+  .badge-success {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-600 dark:bg-success-600/20 dark:text-success-500;
+  }
+
+  .badge-warning {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-600 dark:bg-warning-600/20 dark:text-warning-500;
+  }
+
+  .badge-error {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-error-50 text-error-600 dark:bg-error-600/20 dark:text-error-500;
+  }
+
+  .badge-teal {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-600 dark:bg-teal-600/20 dark:text-teal-500;
+  }
+}
+
+@layer utilities {
+  /* Remove outlines */
+  .no-outline {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Main content padding for fixed header */
+  .main-content {
+    @apply pt-24 sm:pt-28;
+  }
+
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    @apply w-1.5 bg-transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent dark:bg-gray-800/20;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400/60 dark:bg-gray-500 rounded-full;
+  }
+
+  /* Animation classes */
+  .animation-fade-in-up {
+    animation: fadeInUp 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Spacing system */
+  .space-xs {
+    @apply p-1;
+  }
+
+  .space-sm {
+    @apply p-2;
+  }
+
+  .space-md {
+    @apply p-4;
+  }
+
+  .space-lg {
+    @apply p-6;
+  }
+
+  .space-xl {
+    @apply p-8;
+  }
+
+  /* Page transition animations */
+  .page-enter {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .page-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+
+  .page-exit {
+    opacity: 1;
+  }
+
+  .page-exit-active {
+    opacity: 0;
+    transition: opacity 300ms;
+  }
+
+  /* Enhanced animations */
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.4s ease-out forwards;
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.4s ease-out forwards;
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-zoom-in {
+    animation: zoomIn 0.3s ease-out forwards;
+  }
+
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-bounce-in {
+    animation: bounceIn 0.6s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  }
+
+  @keyframes bounceIn {
+    from {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  /* 3D transform utilities */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+}
