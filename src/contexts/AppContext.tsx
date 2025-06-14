@@ -26,6 +26,7 @@ interface AppSettings {
   enableTimer: boolean;
   fontSize: "small" | "medium" | "large";
   theme: "light" | "dark";
+  fontFamily: "inter" | "roboto" | "open-sans" | "poppins";
   studySessionSettings: {
     wordsPerSession: number;
     timeLimit: number;
@@ -64,6 +65,7 @@ const initialSettings: AppSettings = {
   enableTimer: false,
   fontSize: "medium",
   theme: "light",
+  fontFamily: "inter",
   studySessionSettings: {
     wordsPerSession: 20,
     timeLimit: 0,

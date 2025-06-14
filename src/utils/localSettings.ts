@@ -9,6 +9,7 @@ const SETTINGS_KEY = "spelling-master-settings";
 export const defaultSettings: UserSettings = {
   fontSize: "medium",
   theme: "light",
+  fontFamily: "inter",
   enableSound: true,
   enableAutoSpeak: false,
   enableHints: false,
@@ -122,6 +123,7 @@ export const saveSettings = async (
       enableTimer: defaultSettings.enableTimer,
       fontSize: defaultSettings.fontSize,
       theme: defaultSettings.theme,
+      fontFamily: defaultSettings.fontFamily,
       studySessionSettings: {
         ...defaultSettings.studySessionSettings,
       },
@@ -154,6 +156,17 @@ export const saveSettings = async (
         newSettings.theme && ["light", "dark"].includes(newSettings.theme)
           ? (newSettings.theme as "light" | "dark")
           : settingsToSave.theme,
+      fontFamily:
+        newSettings.fontFamily &&
+        ["inter", "roboto", "open-sans", "poppins"].includes(
+          newSettings.fontFamily
+        )
+          ? (newSettings.fontFamily as
+              | "inter"
+              | "roboto"
+              | "open-sans"
+              | "poppins")
+          : settingsToSave.fontFamily,
       studySessionSettings: {
         wordsPerSession:
           typeof newSettings.studySessionSettings?.wordsPerSession === "number"

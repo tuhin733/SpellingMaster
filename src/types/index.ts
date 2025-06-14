@@ -71,6 +71,7 @@ export interface UserSettings {
   enableTimer: boolean;
   fontSize: "small" | "medium" | "large";
   theme: "light" | "dark";
+  fontFamily: "inter" | "roboto" | "open-sans" | "poppins";
   studySessionSettings: {
     wordsPerSession: number;
     timeLimit: number;

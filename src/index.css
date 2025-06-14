@@ -7,15 +7,32 @@
 
 @layer base {
   html {
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: var(--font-family), system-ui, sans-serif;
     scroll-behavior: smooth;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
   @supports (font-variation-settings: normal) {
     html {
-      font-family: "Inter var", system-ui, sans-serif;
+      font-family: var(--font-family), system-ui, sans-serif;
     }
+  }
+
+  /* Font family utility classes */
+  .font-inter {
+    --font-family: "Inter";
+  }
+  .font-inter-var {
+    --font-family: "Inter var";
+  }
+  .font-roboto {
+    --font-family: "Roboto";
+  }
+  .font-open-sans {
+    --font-family: "Open Sans";
+  }
+  .font-poppins {
+    --font-family: "Poppins";
   }
 
   body {

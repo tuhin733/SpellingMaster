@@ -24,6 +24,7 @@ import {
   Mail,
   HelpCircle,
   ChevronDown,
+  Type,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { playSound } from "../utils/sound";
@@ -126,6 +127,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     enableHints: boolean;
     enableTimer: boolean;
     enableAutoSpeak: boolean;
+    fontFamily: boolean;
   }>({
     theme: false,
     fontSize: false,
@@ -135,6 +137,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     enableHints: false,
     enableTimer: false,
     enableAutoSpeak: false,
+    fontFamily: false,
   });
 
   // Filter to get only user custom wordlists
@@ -483,6 +486,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                           { value: "dark", label: "Dark" },
                         ]}
                         isLoading={settingLoading.theme}
+                      />
+                      <SettingItem
+                        icon={<Type className="w-5 h-5 text-blue-500" />}
+                        title="Font Family"
+                        value={settings.fontFamily || "inter"}
+                        onChange={(value) =>
+                          handleSettingChange("fontFamily", value)
+                        }
+                        options={[
+                          { value: "inter", label: "Inter" },
+                          { value: "roboto", label: "Roboto" },
+                          { value: "open-sans", label: "Open Sans" },
+                          { value: "poppins", label: "Poppins" },
+                        ]}
+                        isLoading={settingLoading.fontFamily}
                       />
                       <SettingItem
                         icon={<Text className="w-5 h-5 text-blue-500" />}

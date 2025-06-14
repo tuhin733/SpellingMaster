@@ -63,7 +63,28 @@ const AppContent: React.FC = () => {
       "text-size-large"
     );
     html.classList.add(`text-size-${settings.fontSize}`);
-  }, [settings.theme, settings.fontSize]);
+
+    // Font family classes
+    html.classList.remove(
+      "font-inter",
+      "font-inter-var",
+      "font-roboto",
+      "font-open-sans",
+      "font-poppins"
+    );
+
+    // Apply the selected font family
+    const fontFamily = settings.fontFamily || "inter";
+    if (
+      fontFamily === "inter" &&
+      "fonts" in document &&
+      document.fonts.check('12px "Inter var"')
+    ) {
+      html.classList.add("font-inter-var");
+    } else {
+      html.classList.add(`font-${fontFamily}`);
+    }
+  }, [settings.theme, settings.fontSize, settings.fontFamily]);
 
   const showError = (message: string) => {
     setGlobalError({
