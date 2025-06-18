@@ -1,9 +1,9 @@
-import React from 'react';
-import { BookMarked, Clock, Volume2, Bell, HelpCircle } from 'lucide-react';
-import { Switch } from '@headlessui/react';
-import SettingItem from '../SettingItem';
-import SettingToggle from '../SettingToggle';
-import { SettingLoadingState } from '../../../types/settings';
+import React from "react";
+import { BookMarked, Clock, Volume2, Bell, HelpCircle } from "lucide-react";
+import { Switch } from "@headlessui/react";
+import SettingItem from "../SettingItem";
+import SettingToggle from "../SettingToggle";
+import { SettingLoadingState } from "../../../types/settings";
 
 interface StudyTabProps {
   settings: any;
@@ -48,31 +48,6 @@ const StudyTab: React.FC<StudyTabProps> = ({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Switch
-              checked={settings.enableTimer}
-              onChange={async (value) => {
-                try {
-                  onSettingChange("enableTimer", value);
-                  onStudySettingChange("timeLimit", value ? settings.studySessionSettings?.timeLimit || 30 : 0);
-                } catch (error) {
-                  console.error("Failed to update timer settings:", error);
-                }
-              }}
-              className={`${
-                settings.enableTimer
-                  ? "bg-blue-600"
-                  : "bg-gray-200 dark:bg-gray-700"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
-              disabled={settingLoading.enableTimer || settingLoading.timeLimit}
-            >
-              <span
-                className={`${
-                  settings.enableTimer
-                    ? "translate-x-6"
-                    : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />
-            </Switch>
             {settings.enableTimer && (
               <SettingItem
                 value={settings.studySessionSettings?.timeLimit || 0}
@@ -87,6 +62,36 @@ const StudyTab: React.FC<StudyTabProps> = ({
                 inline
               />
             )}
+            <Switch
+              checked={settings.enableTimer}
+              onChange={async (value) => {
+                try {
+                  // Only update the timer state, don't automatically set time limit
+                  await onSettingChange("enableTimer", value);
+                  // Only update time limit if explicitly enabled
+                  if (value) {
+                    await onStudySettingChange(
+                      "timeLimit",
+                      settings.studySessionSettings?.timeLimit || 30
+                    );
+                  }
+                } catch (error) {
+                  console.error("Failed to update timer settings:", error);
+                }
+              }}
+              className={`${
+                settings.enableTimer
+                  ? "bg-blue-600"
+                  : "bg-gray-200 dark:bg-gray-700"
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+              disabled={settingLoading.enableTimer || settingLoading.timeLimit}
+            >
+              <span
+                className={`${
+                  settings.enableTimer ? "translate-x-6" : "translate-x-1"
+                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+              />
+            </Switch>
           </div>
         </div>
       </div>
@@ -118,4 +123,4 @@ const StudyTab: React.FC<StudyTabProps> = ({
   );
 };
 
-export default StudyTab; 
+export { StudyTab };

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Palette, Type, Text } from 'lucide-react';
-import SettingItem from '../SettingItem';
-import { SettingLoadingState } from '../../../types/settings';
+import React from "react";
+import { Palette, Type, Text } from "lucide-react";
+import SettingItem from "../SettingItem";
+import { SettingLoadingState } from "../../../types/settings";
 
 interface AppearanceTabProps {
   settings: any;
@@ -22,6 +22,7 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
         value={settings.theme}
         onChange={(value) => onSettingChange("theme", value)}
         options={[
+          { value: "system", label: "System" },
           { value: "light", label: "Light" },
           { value: "dark", label: "Dark" },
         ]}
@@ -56,4 +57,4 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
   );
 };
 
-export default AppearanceTab; 
+export default AppearanceTab;

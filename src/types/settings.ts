@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { ToastType } from '../components/Toast';
+import { ReactNode } from "react";
+import { ToastType } from "../components/Toast";
 
 export type TabType = "appearance" | "study" | "wordlists" | "data" | "about";
 
@@ -58,8 +58,10 @@ export interface SettingLoadingState {
 export interface UserSettings {
   enableSound: boolean;
   enableAutoSpeak: boolean;
+  enableHints: boolean;
+  enableTimer: boolean;
   fontSize: "small" | "medium" | "large";
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "system";
   studySessionSettings: {
     wordsPerSession: number; // Number of words per study session
     timeLimit: number; // Time limit in seconds (0 means no limit)

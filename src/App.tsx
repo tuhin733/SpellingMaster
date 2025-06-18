@@ -50,7 +50,17 @@ const AppContent: React.FC = () => {
     const html = document.documentElement;
 
     // Theme classes
-    if (settings.theme === "dark") {
+    if (settings.theme === "system") {
+      // Check system preference
+      if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        html.classList.add("dark");
+      } else {
+        html.classList.remove("dark");
+      }
+    } else if (settings.theme === "dark") {
       html.classList.add("dark");
     } else {
       html.classList.remove("dark");

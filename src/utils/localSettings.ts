@@ -8,7 +8,7 @@ const SETTINGS_KEY = "spelling-master-settings";
 // Default settings
 export const defaultSettings: UserSettings = {
   fontSize: "medium",
-  theme: "light",
+  theme: "system",
   fontFamily: "inter",
   enableSound: true,
   enableAutoSpeak: false,
@@ -48,7 +48,7 @@ export const loadSettings = async (userId?: string): Promise<UserSettings> => {
         const firebaseSettings = await firebaseDb.getSettings(userId);
         if (firebaseSettings) {
           // Compare timestamps to determine which settings are newer
-          const localTimestamp =
+          const localtimestamp =
             typeof settings.updatedAt === "object" &&
             settings.updatedAt?.toMillis
               ? settings.updatedAt.toMillis()
@@ -59,7 +59,7 @@ export const loadSettings = async (userId?: string): Promise<UserSettings> => {
               ? firebaseSettings.updatedAt.toMillis()
               : 0;
 
-          if (firebaseTimestamp > localTimestamp) {
+          if (firebaseTimestamp > localtimestamp) {
             // Firebase has newer settings
             settings = {
               ...defaultSettings,
@@ -67,7 +67,7 @@ export const loadSettings = async (userId?: string): Promise<UserSettings> => {
             };
             // Update localStorage with Firebase settings
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-          } else if (localTimestamp > firebaseTimestamp) {
+          } else if (localtimestamp > firebaseTimestamp) {
             // Local settings are newer, need to sync to Firebase
             needsSync = true;
           }

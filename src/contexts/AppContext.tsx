@@ -25,7 +25,7 @@ interface AppSettings {
   enableHints: boolean;
   enableTimer: boolean;
   fontSize: "small" | "medium" | "large";
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "system";
   fontFamily: "inter" | "roboto" | "open-sans" | "poppins";
   studySessionSettings: {
     wordsPerSession: number;
@@ -64,7 +64,7 @@ const initialSettings: AppSettings = {
   enableHints: false,
   enableTimer: false,
   fontSize: "medium",
-  theme: "light",
+  theme: "system",
   fontFamily: "inter",
   studySessionSettings: {
     wordsPerSession: 20,
@@ -412,7 +412,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       if (updated.hasOwnProperty("enableTimer")) {
         if (!updated.enableTimer) {
           updated.studySessionSettings.timeLimit = 0;
-        } else if (!updated.studySessionSettings.timeLimit) {
+        } else if (
+          updated.enableTimer &&
+          updated.studySessionSettings.timeLimit === 0
+        ) {
           updated.studySessionSettings.timeLimit = 30;
         }
       }

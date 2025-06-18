@@ -70,7 +70,7 @@ export interface UserSettings {
   enableHints: boolean;
   enableTimer: boolean;
   fontSize: "small" | "medium" | "large";
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "system";
   fontFamily: "inter" | "roboto" | "open-sans" | "poppins";
   studySessionSettings: {
     wordsPerSession: number;

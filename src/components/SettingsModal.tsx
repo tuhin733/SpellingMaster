@@ -4,6 +4,7 @@ import { useProgress } from "../contexts/ProgressContext";
 import { useAuth } from "../contexts/AuthContext";
 import ConfirmDialog from "./ConfirmDialog";
 import Toast, { ToastType } from "./Toast";
+import { UserSettings } from "../types/settings";
 import {
   Text,
   XCircle,
@@ -35,9 +36,14 @@ import { Wordlist } from "../types";
 import Tooltip from "./Tooltip";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { Switch } from "@headlessui/react";
-import { TabType, TabItem, ToastState, SettingLoadingState } from "../types/settings";
+import {
+  TabType,
+  TabItem,
+  ToastState,
+  SettingLoadingState,
+} from "../types/settings";
 import AppearanceTab from "./settings/tabs/AppearanceTab";
-import StudyTab from "./settings/tabs/StudyTab";
+import { StudyTab } from "./settings/tabs/StudyTab";
 import SettingItem from "./settings/SettingItem";
 import SettingToggle from "./settings/SettingToggle";
 import DangerButton from "./settings/DangerButton";
@@ -185,7 +191,22 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     setSettingLoading((prev) => ({ ...prev, [key]: true }));
 
     try {
-      await updateSettings({ [key]: value });
+      // Special handling for timer setting
+      if (key === "enableTimer") {
+        const updatedSettings = {
+          enableTimer: value,
+          studySessionSettings: {
+            ...settings.studySessionSettings,
+            timeLimit: value
+              ? settings.studySessionSettings?.timeLimit || 30
+              : 0,
+          },
+        };
+        await updateSettings(updatedSettings);
+      } else {
+        await updateSettings({ [key]: value });
+      }
+
       if (key === "enableSound" && value) playSound("success", true);
     } catch (error) {
       showToast("Failed to update setting", "error");
@@ -204,12 +225,19 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     setSettingLoading((prev) => ({ ...prev, [key]: true }));
 
     try {
-      await updateSettings({
+      const updatedSettings: Partial<UserSettings> = {
         studySessionSettings: {
           ...settings.studySessionSettings,
           [key]: value,
         },
-      });
+      };
+
+      // Only enable timer if time limit is being set to a non-zero value
+      if (key === "timeLimit" && value > 0) {
+        updatedSettings.enableTimer = true;
+      }
+
+      await updateSettings(updatedSettings);
     } catch (error) {
       showToast("Failed to update study settings", "error");
     } finally {
