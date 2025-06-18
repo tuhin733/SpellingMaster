@@ -623,9 +623,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
                             >
                               <div className="flex items-center">
                                 <span>{lang.name}</span>
-                                <span className="text-xs text-secondary-500 ml-2">
-                                  {lang.code}
-                                </span>
                               </div>
                               {selectedLanguage === lang.name && (
                                 <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />

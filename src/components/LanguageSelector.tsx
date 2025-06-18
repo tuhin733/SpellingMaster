@@ -92,9 +92,6 @@ export const LanguageSelector: React.FC = () => {
                   <span>{lang.name}</span>
                 </span>
                 <span className="flex items-center">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {lang.code}
-                  </span>
                   {selectedLanguage.code === lang.code && (
                     <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 ml-2" />
                   )}
