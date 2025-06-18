@@ -303,7 +303,7 @@ const Flashcard: React.FC<FlashcardProps> = ({
                           <div
                             className={`w-2 h-2 rounded-full transition-colors ${
                               isFocused
-                                ? "bg-green-500 animate-pulse"
+                                ? "bg-green-500"
                                 : "bg-gray-300 dark:bg-gray-600"
                             }`}
                           />

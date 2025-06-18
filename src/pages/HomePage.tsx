@@ -8,6 +8,8 @@ import { UploadButton, UploadModal } from "../components";
 import { Wordlist } from "../types";
 import Spinner from "../components/Spinner";
 import { useAuth } from "../contexts/AuthContext";
+import GlobalSearchModal from "../components/GlobalSearchModal";
+import { useGlobalSearch } from "../hooks/useGlobalSearch";
 
 const HomePage: React.FC = () => {
   const { wordlists, isLoading, refreshWordlists } = useApp();
@@ -16,6 +18,21 @@ const HomePage: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [pageReady, setPageReady] = useState(false);
+
+  // Set up global search
+  const {
+    isGlobalSearchOpen,
+    openGlobalSearch,
+    closeGlobalSearch,
+    languages,
+    wordLists,
+  } = useGlobalSearch({
+    languages: wordlists.map(wl => ({ id: wl.id, name: wl.language })),
+    wordLists: wordlists.reduce((acc, wl) => ({
+      ...acc,
+      [wl.id]: wl.words
+    }), {})
+  });
 
   useEffect(() => {
     // Set page as ready once we have either wordlists or confirmed we're not loading
@@ -113,6 +130,8 @@ const HomePage: React.FC = () => {
             onFilterChange={setSelectedFilter}
             filterOptions={filterOptions}
             selectedFilter={selectedFilter}
+            showGlobalSearch={true}
+            onGlobalSearch={openGlobalSearch}
           />
         </div>
 
@@ -158,6 +177,14 @@ const HomePage: React.FC = () => {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onSuccess={handleUploadSuccess}
+      />
+
+      {/* Global Search Modal */}
+      <GlobalSearchModal
+        isOpen={isGlobalSearchOpen}
+        onClose={closeGlobalSearch}
+        languages={languages}
+        wordLists={wordLists}
       />
     </div>
   );

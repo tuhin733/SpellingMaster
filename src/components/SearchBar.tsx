@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { Search, X, Filter, ChevronDown, Check } from "lucide-react";
+import { Search, X, Filter, ChevronDown, Check, Globe } from "lucide-react";
 
 export type FilterOption = {
   label: string;
@@ -17,19 +17,23 @@ interface DropdownPosition {
 interface SearchBarProps {
   onSearch: (term: string) => void;
   onFilterChange?: (value: string) => void;
+  onGlobalSearch?: () => void;
   placeholder?: string;
   className?: string;
   filterOptions?: FilterOption[];
   selectedFilter?: string;
+  showGlobalSearch?: boolean;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
   onFilterChange,
+  onGlobalSearch,
   placeholder = "Search languages...",
   className = "",
   filterOptions = [],
   selectedFilter = "all",
+  showGlobalSearch = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -188,7 +192,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
       />
 
       {/* Right-side icons/hints container */}
-      {/* Use pr-3 to create space for the filter button + vertical line + clear/ESC */}
       <div className="absolute inset-y-0 right-0 flex items-center pr-3">
         {/* Clear Button or ESC Hint */}
         {searchTerm ? (
@@ -201,7 +204,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
               <X className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
             </div>
           </button>
-        ) : filterOptions.length > 0 ? ( // Show ESC only if no search term and filter button is present
+        ) : filterOptions.length > 0 ? (
           <div
             className="text-xs font-medium
             bg-gray-100 text-gray-500 px-2 py-1 rounded-md select-none
@@ -209,19 +212,39 @@ const SearchBar: React.FC<SearchBarProps> = ({
           >
             ESC
           </div>
-        ) : null}{" "}
-        {/* No hint if no search and no filter options */}
-        {/* Vertical Line and Filter Button Container */}
-        {filterOptions.length > 0 && (
+        ) : null}
+
+        {/* Vertical Line and Buttons Container */}
+        {(filterOptions.length > 0 || showGlobalSearch) && (
           <>
             <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-3" />
-            <button
-              ref={filterButtonRef}
-              onClick={toggleFilter}
-              className={filterButtonClasses}
-            >
-              <Filter className={filterIconClasses} />
-            </button>
+            <div className="flex items-center gap-2">
+              {showGlobalSearch && (
+                <>
+                  <button
+                    onClick={onGlobalSearch}
+                    className="flex items-center justify-center p-1.5 text-sm transition-colors rounded-lg shadow-sm border
+                      bg-gray-100 text-gray-600 hover:text-gray-800 dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-200 
+                      border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    aria-label="Global search"
+                  >
+                    <Globe className="w-4 h-4" />
+                  </button>
+                  {filterOptions.length > 0 && (
+                    <div className="h-8 w-px bg-gray-200 dark:bg-gray-700" />
+                  )}
+                </>
+              )}
+              {filterOptions.length > 0 && (
+                <button
+                  ref={filterButtonRef}
+                  onClick={toggleFilter}
+                  className={filterButtonClasses}
+                >
+                  <Filter className={filterIconClasses} />
+                </button>
+              )}
+            </div>
           </>
         )}
       </div>

@@ -35,18 +35,16 @@ import { Wordlist } from "../types";
 import Tooltip from "./Tooltip";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { Switch } from "@headlessui/react";
+import { TabType, TabItem, ToastState, SettingLoadingState } from "../types/settings";
+import AppearanceTab from "./settings/tabs/AppearanceTab";
+import StudyTab from "./settings/tabs/StudyTab";
+import SettingItem from "./settings/SettingItem";
+import SettingToggle from "./settings/SettingToggle";
+import DangerButton from "./settings/DangerButton";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-}
-
-type TabType = "appearance" | "study" | "wordlists" | "data" | "about";
-
-interface TabItem {
-  id: TabType;
-  label: string;
-  icon: React.ReactNode;
 }
 
 const tabs: TabItem[] = [
@@ -103,11 +101,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const [selectedWordlist, setSelectedWordlist] = useState<Wordlist | null>(
     null
   );
-  const [toast, setToast] = useState<{
-    message: string;
-    isVisible: boolean;
-    type?: ToastType;
-  }>({
+  const [toast, setToast] = useState<ToastState>({
     message: "",
     isVisible: false,
     type: "info",
@@ -118,17 +112,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const [isResettingAllData, setIsResettingAllData] = useState(false);
   const [isDeletingWordlist, setIsDeletingWordlist] = useState(false);
   const [isDeletingAllWordlists, setIsDeletingAllWordlists] = useState(false);
-  const [settingLoading, setSettingLoading] = useState<{
-    theme: boolean;
-    fontSize: boolean;
-    wordsPerSession: boolean;
-    timeLimit: boolean;
-    enableSound: boolean;
-    enableHints: boolean;
-    enableTimer: boolean;
-    enableAutoSpeak: boolean;
-    fontFamily: boolean;
-  }>({
+  const [settingLoading, setSettingLoading] = useState<SettingLoadingState>({
     theme: false,
     fontSize: false,
     wordsPerSession: false,
@@ -473,216 +457,20 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                   className="space-y-4"
                 >
                   {activeTab === "appearance" && (
-                    <div>
-                      <SettingItem
-                        icon={<Palette className="w-5 h-5 text-blue-500" />}
-                        title="Theme"
-                        value={settings.theme}
-                        onChange={(value) =>
-                          handleSettingChange("theme", value)
-                        }
-                        options={[
-                          { value: "light", label: "Light" },
-                          { value: "dark", label: "Dark" },
-                        ]}
-                        isLoading={settingLoading.theme}
-                      />
-                      <SettingItem
-                        icon={<Type className="w-5 h-5 text-blue-500" />}
-                        title="Font Family"
-                        value={settings.fontFamily || "inter"}
-                        onChange={(value) =>
-                          handleSettingChange("fontFamily", value)
-                        }
-                        options={[
-                          { value: "inter", label: "Inter" },
-                          { value: "roboto", label: "Roboto" },
-                          { value: "open-sans", label: "Open Sans" },
-                          { value: "poppins", label: "Poppins" },
-                        ]}
-                        isLoading={settingLoading.fontFamily}
-                      />
-                      <SettingItem
-                        icon={<Text className="w-5 h-5 text-blue-500" />}
-                        title="Font Size"
-                        value={settings.fontSize}
-                        onChange={(value) =>
-                          handleSettingChange("fontSize", value)
-                        }
-                        options={[
-                          { value: "small", label: "Small" },
-                          { value: "medium", label: "Medium" },
-                          { value: "large", label: "Large" },
-                        ]}
-                        isLoading={settingLoading.fontSize}
-                      />
-                    </div>
+                    <AppearanceTab
+                      settings={settings}
+                      settingLoading={settingLoading}
+                      onSettingChange={handleSettingChange}
+                    />
                   )}
 
                   {activeTab === "study" && (
-                    <div>
-                      <SettingItem
-                        icon={<BookMarked className="w-5 h-5 text-blue-500" />}
-                        title="Words Per Session"
-                        value={
-                          settings.studySessionSettings?.wordsPerSession || 20
-                        }
-                        onChange={(value) =>
-                          handleStudySettingChange("wordsPerSession", value)
-                        }
-                        options={[
-                          { value: 5, label: "5 words" },
-                          { value: 20, label: "20 words" },
-                          { value: 50, label: "50 words" },
-                        ]}
-                        isLoading={settingLoading.wordsPerSession}
-                      />
-                      <div className="bg-white dark:bg-secondary-800/50 border-b border-gray-200/80 dark:border-gray-600">
-                        <div className="flex items-center justify-between p-4">
-                          <div className="flex items-center gap-2.5">
-                            <div className="text-blue-500">
-                              <Clock className="w-5 h-5" />
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="text-sm text-gray-800 dark:text-gray-100">
-                                Timer
-                              </span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                Set time limit for each word
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <Switch
-                              checked={settings.enableTimer}
-                              onChange={async (value) => {
-                                try {
-                                  setSettingLoading((prev) => ({
-                                    ...prev,
-                                    enableTimer: true,
-                                    timeLimit: true,
-                                  }));
-
-                                  // Update the entire timer settings object at once
-                                  await updateSettings({
-                                    enableTimer: value,
-                                    studySessionSettings: {
-                                      ...settings.studySessionSettings,
-                                      timeLimit: value
-                                        ? settings.studySessionSettings
-                                            ?.timeLimit || 30
-                                        : 0,
-                                      wordsPerSession:
-                                        settings.studySessionSettings
-                                          ?.wordsPerSession || 20,
-                                    },
-                                  });
-                                } catch (error) {
-                                  showToast(
-                                    "Failed to update timer settings",
-                                    "error"
-                                  );
-                                } finally {
-                                  setSettingLoading((prev) => ({
-                                    ...prev,
-                                    enableTimer: false,
-                                    timeLimit: false,
-                                  }));
-                                }
-                              }}
-                              className={`${
-                                settings.enableTimer
-                                  ? "bg-blue-600"
-                                  : "bg-gray-200 dark:bg-gray-700"
-                              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
-                              disabled={
-                                settingLoading.enableTimer ||
-                                settingLoading.timeLimit
-                              }
-                            >
-                              <span
-                                className={`${
-                                  settings.enableTimer
-                                    ? "translate-x-6"
-                                    : "translate-x-1"
-                                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                              />
-                            </Switch>
-                            {settings.enableTimer && (
-                              <SettingItem
-                                value={
-                                  settings.studySessionSettings?.timeLimit || 0
-                                }
-                                onChange={async (value) => {
-                                  try {
-                                    setSettingLoading((prev) => ({
-                                      ...prev,
-                                      timeLimit: true,
-                                    }));
-
-                                    // Update the entire studySessionSettings object
-                                    await updateSettings({
-                                      studySessionSettings: {
-                                        ...settings.studySessionSettings,
-                                        timeLimit: value,
-                                      },
-                                    });
-                                  } catch (error) {
-                                    showToast(
-                                      "Failed to update time limit",
-                                      "error"
-                                    );
-                                  } finally {
-                                    setSettingLoading((prev) => ({
-                                      ...prev,
-                                      timeLimit: false,
-                                    }));
-                                  }
-                                }}
-                                options={[
-                                  { value: 15, label: "15s" },
-                                  { value: 30, label: "30s" },
-                                  { value: 60, label: "60s" },
-                                ]}
-                                isLoading={settingLoading.timeLimit}
-                                hideIcon
-                                inline
-                              />
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <SettingToggle
-                        icon={<Volume2 className="w-5 h-5" />}
-                        title="Sound Effects"
-                        description="Play sound effects for actions"
-                        value={settings.enableSound}
-                        onChange={(value) =>
-                          handleSettingChange("enableSound", value)
-                        }
-                        isLoading={settingLoading.enableSound}
-                      />
-                      <SettingToggle
-                        icon={<Bell className="w-5 h-5" />}
-                        title="Auto-Speak Words"
-                        description="Automatically speak words during practice"
-                        value={settings.enableAutoSpeak}
-                        onChange={(value) =>
-                          handleSettingChange("enableAutoSpeak", value)
-                        }
-                        isLoading={settingLoading.enableAutoSpeak}
-                      />
-                      <SettingToggle
-                        icon={<HelpCircle className="w-5 h-5" />}
-                        title="Hints"
-                        description="Show hints during practice"
-                        value={settings.enableHints}
-                        onChange={(value) =>
-                          handleSettingChange("enableHints", value)
-                        }
-                        isLoading={settingLoading.enableHints}
-                      />
-                    </div>
+                    <StudyTab
+                      settings={settings}
+                      settingLoading={settingLoading}
+                      onSettingChange={handleSettingChange}
+                      onStudySettingChange={handleStudySettingChange}
+                    />
                   )}
 
                   {activeTab === "wordlists" && (
@@ -1099,241 +887,5 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     </div>
   );
 };
-
-interface DropdownPosition {
-  top: number;
-  left: number;
-  transformOrigin?: string;
-  translate?: string;
-}
-
-interface SettingItemProps {
-  icon?: React.ReactNode;
-  title?: string;
-  value: any;
-  onChange: (value: any) => void;
-  options: { value: any; label: string }[];
-  isLoading?: boolean;
-  hideIcon?: boolean;
-  inline?: boolean;
-}
-
-const SettingItem: React.FC<SettingItemProps> = ({
-  icon,
-  title,
-  value,
-  onChange,
-  options,
-  isLoading = false,
-  hideIcon = false,
-  inline = false,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  if (inline) {
-    return (
-      <div className="relative">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className={`flex items-center justify-between gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-            isOpen
-              ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-              : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50"
-          }`}
-          disabled={isLoading}
-        >
-          <span>{options.find((option) => option.value === value)?.label}</span>
-          {isLoading ? (
-            <div className="w-4 h-4 border-2 border-t-blue-500 border-r-blue-500 border-b-transparent border-l-transparent rounded-full animate-spin" />
-          ) : (
-            <ChevronDown
-              className={`w-4 h-4 transition-transform ${
-                isOpen ? "rotate-180" : ""
-              }`}
-            />
-          )}
-        </button>
-        {isOpen && (
-          <div className="absolute right-0 z-10 mt-1 w-40 origin-top-right rounded-lg bg-white dark:bg-secondary-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="py-1">
-              {options.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => {
-                    onChange(option.value);
-                    setIsOpen(false);
-                  }}
-                  className={`block w-full px-4 py-2 text-sm text-left transition-colors ${
-                    option.value === value
-                      ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700/50"
-                  }`}
-                  disabled={isLoading}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-white dark:bg-secondary-800/50 border-b border-gray-200/80 dark:border-gray-600">
-      <div className="flex items-center justify-between p-4">
-        {!hideIcon && (
-          <div className="flex items-center gap-2.5">
-            <div className="text-blue-500">{icon}</div>
-            <span className="text-sm text-gray-800 dark:text-gray-100">
-              {title}
-            </span>
-          </div>
-        )}
-        <div className="relative">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className={`flex items-center justify-between gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              isOpen
-                ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-                : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50"
-            }`}
-            disabled={isLoading}
-          >
-            <span>
-              {options.find((option) => option.value === value)?.label}
-            </span>
-            {isLoading ? (
-              <div className="w-4 h-4 border-2 border-t-blue-500 border-r-blue-500 border-b-transparent border-l-transparent rounded-full animate-spin" />
-            ) : (
-              <ChevronDown
-                className={`w-4 h-4 transition-transform ${
-                  isOpen ? "rotate-180" : ""
-                }`}
-              />
-            )}
-          </button>
-          {isOpen && (
-            <div className="absolute right-0 z-10 mt-1 w-40 origin-top-right rounded-lg bg-white dark:bg-secondary-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-              <div className="py-1">
-                {options.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => {
-                      onChange(option.value);
-                      setIsOpen(false);
-                    }}
-                    className={`block w-full px-4 py-2 text-sm text-left transition-colors ${
-                      option.value === value
-                        ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-                        : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700/50"
-                    }`}
-                    disabled={isLoading}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface SettingToggleProps {
-  icon: React.ReactNode;
-  title: string;
-  description?: string;
-  value: boolean;
-  onChange: (value: boolean) => void;
-  isLoading?: boolean;
-}
-
-const SettingToggle: React.FC<SettingToggleProps> = ({
-  icon,
-  title,
-  description,
-  value,
-  onChange,
-  isLoading = false,
-}) => {
-  return (
-    <div className="bg-white dark:bg-secondary-800/50 border-b border-gray-200/80 dark:border-gray-600">
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-2.5">
-          <div className="text-blue-500">{icon}</div>
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-800 dark:text-gray-100">
-              {title}
-            </span>
-            {description && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {description}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="relative">
-          {isLoading ? (
-            <div className="w-4 h-4 border-2 border-t-blue-500 border-r-blue-500 border-b-transparent border-l-transparent rounded-full animate-spin" />
-          ) : (
-            <Switch
-              checked={value}
-              onChange={onChange}
-              className={`${
-                value ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
-              disabled={isLoading}
-            >
-              <span
-                className={`${
-                  value ? "translate-x-6" : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />
-            </Switch>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface DangerButtonProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  onClick: () => void;
-  variant?: "warning" | "danger";
-}
-
-const DangerButton: React.FC<DangerButtonProps> = ({
-  icon,
-  title,
-  description,
-  onClick,
-  variant = "warning",
-}) => (
-  <button
-    onClick={onClick}
-    className="w-full p-4 bg-white dark:bg-secondary-800/50 rounded-lg border border-gray-200/80 dark:border-gray-600/50 hover:bg-gray-50 dark:hover:bg-secondary-800 transition-colors text-left"
-  >
-    <div className="flex items-center gap-3">
-      <div className={variant === "danger" ? "text-red-500" : "text-blue-500"}>
-        {icon}
-      </div>
-      <div>
-        <span className="text-gray-800 dark:text-gray-100 font-medium">
-          {title}
-        </span>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-          {description}
-        </p>
-      </div>
-    </div>
-  </button>
-);
 
 export default SettingsModal;
