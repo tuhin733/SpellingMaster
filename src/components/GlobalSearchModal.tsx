@@ -9,9 +9,14 @@ import {
   Sparkles,
   Plus,
   List,
+  AlertCircle,
 } from "lucide-react";
 import SearchBar from "./SearchBar";
 import { searchWithAI } from "../utils/aiSearch";
+import * as db from "../utils/indexedDb";
+import { Wordlist } from "../types";
+import { motion, AnimatePresence } from "framer-motion";
+import { useApp } from "../contexts/AppContext";
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -46,7 +51,41 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("search");
   const [newWordlistName, setNewWordlistName] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [createProgress, setCreateProgress] = useState(0);
   const languageRef = useRef<HTMLDivElement>(null);
+  const { refreshWordlists } = useApp();
+
+  // Reset state when modal is opened/closed
+  useEffect(() => {
+    if (isOpen) {
+      setSearchTerm("");
+      setSelectedLanguage(languages[0]?.id || "");
+      setSearchResults([]);
+      setAiResults([]);
+      setSearchError(null);
+      setSelectedWords([]);
+      setNewWordlistName("");
+      setCreateError(null);
+      setCreateProgress(0);
+    }
+  }, [isOpen, languages]);
+
+  // Simulate progress during creation
+  useEffect(() => {
+    let progressInterval: NodeJS.Timeout;
+
+    if (isCreating && createProgress < 90) {
+      progressInterval = setInterval(() => {
+        setCreateProgress((prev) => Math.min(prev + 10, 90));
+      }, 300);
+    }
+
+    return () => {
+      if (progressInterval) clearInterval(progressInterval);
+    };
+  }, [isCreating, createProgress]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -133,24 +172,75 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     setSelectedWords(selectedWords.filter((w) => w !== word));
   };
 
-  const handleCreateWordlist = () => {
+  const handleCreateWordlist = async () => {
     if (!newWordlistName.trim()) {
-      // Show error or handle empty name
+      setCreateError("Please enter a name for your wordlist.");
       return;
     }
 
-    // Here you would typically call a function to save the wordlist
-    // For now, we'll just log it
-    console.log("Creating wordlist:", {
-      name: newWordlistName,
-      language: selectedLanguage,
-      words: selectedWords,
-    });
+    if (selectedWords.length === 0) {
+      setCreateError("Please select at least one word.");
+      return;
+    }
 
-    // Reset the form
-    setNewWordlistName("");
-    setSelectedWords([]);
-    setActiveTab("search");
+    if (!selectedLanguage) {
+      setCreateError("Please select a language.");
+      return;
+    }
+
+    try {
+      setIsCreating(true);
+      setCreateError(null);
+      setCreateProgress(10);
+
+      const selectedLang = languages.find(
+        (lang) => lang.id === selectedLanguage
+      );
+      if (!selectedLang) {
+        throw new Error("Selected language not found.");
+      }
+
+      // Create wordlist object
+      const wordlist: Wordlist = {
+        id: crypto.randomUUID(),
+        title: newWordlistName.trim(),
+        name: newWordlistName.trim(),
+        language: selectedLang.name,
+        languageCode: selectedLang.id,
+        words: selectedWords,
+        description: `Custom wordlist created from search results`,
+        source: "user",
+        timestamp: Date.now(),
+        isCustom: true,
+      };
+
+      // Save to IndexedDB
+      await db.saveWordlist(wordlist);
+      setCreateProgress(90);
+
+      // Complete the progress bar
+      setCreateProgress(100);
+
+      // Wait for success animation to complete
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Refresh wordlists in the app
+      await refreshWordlists();
+
+      // Reset form and close modal
+      setNewWordlistName("");
+      setSelectedWords([]);
+      setActiveTab("search");
+      onClose();
+    } catch (error: any) {
+      console.error("Create wordlist error:", error);
+      setCreateError(
+        error.message || "Failed to create wordlist. Please try again."
+      );
+      setCreateProgress(0);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -393,14 +483,37 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                 <button
                   onClick={handleCreateWordlist}
                   disabled={
-                    !newWordlistName.trim() || selectedWords.length === 0
+                    !newWordlistName.trim() ||
+                    selectedWords.length === 0 ||
+                    isCreating
                   }
                   className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600 flex items-center gap-2 whitespace-nowrap"
                 >
-                  <Plus className="w-4 h-4" />
+                  {isCreating ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
                   Create Wordlist
                 </button>
               </div>
+
+              {/* Error message */}
+              <AnimatePresence>
+                {createError && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="p-2.5 bg-red-50 rounded-lg flex items-start dark:bg-red-900/20 overflow-hidden border border-red-100 dark:border-red-800/30 mb-4"
+                  >
+                    <AlertCircle className="w-4 h-4 text-red-500 mr-2 flex-shrink-0 dark:text-red-400" />
+                    <p className="text-sm text-red-800 dark:text-red-300">
+                      {createError}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
                 {selectedWords.length > 0 ? (
@@ -434,6 +547,45 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                   </div>
                 )}
               </div>
+
+              {/* Creation progress circle */}
+              <AnimatePresence>
+                {isCreating && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="absolute bottom-4 left-4 flex items-center space-x-2"
+                  >
+                    <div className="relative w-5 h-5">
+                      <svg className="w-5 h-5 transform -rotate-90">
+                        <circle
+                          cx="10"
+                          cy="10"
+                          r="8"
+                          fill="none"
+                          strokeWidth="3"
+                          className="stroke-secondary-200 dark:stroke-secondary-600"
+                        />
+                        <circle
+                          cx="10"
+                          cy="10"
+                          r="8"
+                          fill="none"
+                          strokeWidth="3"
+                          strokeDasharray={`${
+                            (createProgress / 100) * 50.24
+                          } 50.24`}
+                          className="stroke-primary-500 dark:stroke-primary-400 transition-all duration-300"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-secondary-600 dark:text-secondary-400">
+                      {createProgress}%
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )}
         </div>
