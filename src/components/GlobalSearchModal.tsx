@@ -10,6 +10,7 @@ import {
   Plus,
   List,
   AlertCircle,
+  Save,
 } from "lucide-react";
 import SearchBar from "./SearchBar";
 import { searchWithAI } from "../utils/aiSearch";
@@ -31,6 +32,7 @@ interface AISearchResult {
 }
 
 type Tab = "search" | "selected";
+type SaveMode = "create" | "append";
 
 const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   isOpen,
@@ -54,8 +56,12 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [createProgress, setCreateProgress] = useState(0);
+  const [saveMode, setSaveMode] = useState<SaveMode>("create");
+  const [selectedWordlist, setSelectedWordlist] = useState<string>("");
+  const [isWordlistOpen, setIsWordlistOpen] = useState(false);
   const languageRef = useRef<HTMLDivElement>(null);
-  const { refreshWordlists } = useApp();
+  const wordlistRef = useRef<HTMLDivElement>(null);
+  const { refreshWordlists, wordlists } = useApp();
 
   // Reset state when modal is opened/closed
   useEffect(() => {
@@ -69,6 +75,8 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       setNewWordlistName("");
       setCreateError(null);
       setCreateProgress(0);
+      setSaveMode("create");
+      setSelectedWordlist("");
     }
   }, [isOpen, languages]);
 
@@ -137,6 +145,21 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Close wordlist dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wordlistRef.current &&
+        !wordlistRef.current.contains(event.target as Node)
+      ) {
+        setIsWordlistOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
@@ -172,10 +195,17 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     setSelectedWords(selectedWords.filter((w) => w !== word));
   };
 
-  const handleCreateWordlist = async () => {
-    if (!newWordlistName.trim()) {
-      setCreateError("Please enter a name for your wordlist.");
-      return;
+  const handleSaveWordlist = async () => {
+    if (saveMode === "create") {
+      if (!newWordlistName.trim()) {
+        setCreateError("Please enter a name for your wordlist.");
+        return;
+      }
+    } else {
+      if (!selectedWordlist) {
+        setCreateError("Please select a wordlist to append to.");
+        return;
+      }
     }
 
     if (selectedWords.length === 0) {
@@ -200,22 +230,56 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         throw new Error("Selected language not found.");
       }
 
-      // Create wordlist object
-      const wordlist: Wordlist = {
-        id: crypto.randomUUID(),
-        title: newWordlistName.trim(),
-        name: newWordlistName.trim(),
-        language: selectedLang.name,
-        languageCode: selectedLang.id,
-        words: selectedWords,
-        description: `Custom wordlist created from search results`,
-        source: "user",
-        timestamp: Date.now(),
-        isCustom: true,
-      };
+      if (saveMode === "create") {
+        // Create new wordlist
+        const wordlist: Wordlist = {
+          id: crypto.randomUUID(),
+          title: newWordlistName.trim(),
+          name: newWordlistName.trim(),
+          language: selectedLang.name,
+          languageCode: selectedLang.id,
+          words: selectedWords,
+          description: `Custom wordlist created from search results`,
+          source: "user",
+          timestamp: Date.now(),
+          isCustom: true,
+        };
 
-      // Save to IndexedDB
-      await db.saveWordlist(wordlist);
+        await db.saveWordlist(wordlist);
+      } else {
+        // Append to existing wordlist
+        const existingWordlist = wordlists.find(
+          (w) => w.id === selectedWordlist
+        );
+        if (!existingWordlist) {
+          throw new Error("Selected wordlist not found.");
+        }
+
+        // Filter out duplicates
+        const newWords = selectedWords.filter(
+          (word) =>
+            !existingWordlist.words.some((w) =>
+              typeof w === "string" ? w === word : w.word === word
+            )
+        );
+        if (newWords.length === 0) {
+          throw new Error("All selected words already exist in the wordlist.");
+        }
+
+        // Convert all words to Word objects for consistency
+        const updatedWordlist: Wordlist = {
+          ...existingWordlist,
+          words: [
+            ...existingWordlist.words.map((w) =>
+              typeof w === "string" ? { word: w } : w
+            ),
+            ...newWords.map((word) => ({ word })),
+          ],
+        };
+
+        await db.saveWordlist(updatedWordlist);
+      }
+
       setCreateProgress(90);
 
       // Complete the progress bar
@@ -233,9 +297,9 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       setActiveTab("search");
       onClose();
     } catch (error: any) {
-      console.error("Create wordlist error:", error);
+      console.error("Save wordlist error:", error);
       setCreateError(
-        error.message || "Failed to create wordlist. Please try again."
+        error.message || "Failed to save wordlist. Please try again."
       );
       setCreateProgress(0);
     } finally {
@@ -472,30 +536,106 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             </>
           ) : (
             <div className="flex-1 flex flex-col">
-              <div className="mb-4 flex gap-2">
-                <input
-                  type="text"
-                  value={newWordlistName}
-                  onChange={(e) => setNewWordlistName(e.target.value)}
-                  placeholder="Enter wordlist name..."
-                  className="flex-1 px-4 py-2 text-sm bg-white text-gray-800 border-2 border-gray-200 rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-200 hover:border-gray-300 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:hover:border-gray-600 dark:focus:ring-blue-800"
-                />
-                <button
-                  onClick={handleCreateWordlist}
-                  disabled={
-                    !newWordlistName.trim() ||
-                    selectedWords.length === 0 ||
-                    isCreating
-                  }
-                  className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600 flex items-center gap-2 whitespace-nowrap"
-                >
-                  {isCreating ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="mb-4 space-y-3">
+                {/* Save mode selector */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSaveMode("create")}
+                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-xl transition-colors ${
+                      saveMode === "create"
+                        ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                    }`}
+                  >
+                    Create New
+                  </button>
+                  <button
+                    onClick={() => setSaveMode("append")}
+                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-xl transition-colors ${
+                      saveMode === "append"
+                        ? "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                    }`}
+                  >
+                    Append to Existing
+                  </button>
+                </div>
+
+                {/* Input field or wordlist selector with save button */}
+                <div className="flex gap-2">
+                  {saveMode === "create" ? (
+                    <input
+                      type="text"
+                      value={newWordlistName}
+                      onChange={(e) => setNewWordlistName(e.target.value)}
+                      placeholder="Enter wordlist name..."
+                      className="flex-1 px-4 py-2 text-sm bg-white text-gray-800 border-2 border-gray-200 rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-200 hover:border-gray-300 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:hover:border-gray-600 dark:focus:ring-blue-800"
+                    />
                   ) : (
-                    <Plus className="w-4 h-4" />
+                    <div className="relative flex-1" ref={wordlistRef}>
+                      <button
+                        type="button"
+                        onClick={() => setIsWordlistOpen(!isWordlistOpen)}
+                        className="w-full px-4 py-2 text-sm bg-white text-gray-800 border-2 border-gray-200 rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-200 hover:border-gray-300 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:hover:border-gray-600 dark:focus:ring-blue-800 flex items-center justify-between"
+                      >
+                        <span>
+                          {selectedWordlist
+                            ? wordlists.find((w) => w.id === selectedWordlist)
+                                ?.title
+                            : "Select a wordlist"}
+                        </span>
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform ${
+                            isWordlistOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+
+                      {isWordlistOpen && (
+                        <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-secondary-200 dark:bg-secondary-800 dark:border-secondary-700 max-h-[200px] overflow-y-auto scrollbar-thin [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar]:bg-transparent [&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-track]:bg-gray-800/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-400/60 dark:[&::-webkit-scrollbar-thumb]:bg-gray-500">
+                          <div className="py-1">
+                            {wordlists
+                              .filter((w) => w.isCustom)
+                              .map((wordlist) => (
+                                <button
+                                  key={wordlist.id}
+                                  onClick={() => {
+                                    setSelectedWordlist(wordlist.id);
+                                    setIsWordlistOpen(false);
+                                  }}
+                                  className="w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between text-secondary-700 dark:text-secondary-300"
+                                >
+                                  <span>{wordlist.title}</span>
+                                  {selectedWordlist === wordlist.id && (
+                                    <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                                  )}
+                                </button>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
-                  Create Wordlist
-                </button>
+                  <button
+                    onClick={handleSaveWordlist}
+                    disabled={
+                      (saveMode === "create" && !newWordlistName.trim()) ||
+                      (saveMode === "append" && !selectedWordlist) ||
+                      selectedWords.length === 0 ||
+                      isCreating
+                    }
+                    className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-primary-500 dark:hover:bg-primary-600 flex items-center gap-2 whitespace-nowrap"
+                  >
+                    {isCreating ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : saveMode === "create" ? (
+                      <Plus className="w-4 h-4" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                    {saveMode === "create" ? "Create" : "Append"}
+                  </button>
+                </div>
               </div>
 
               {/* Error message */}
