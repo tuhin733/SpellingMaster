@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X, Search, Globe, ChevronDown, Check } from 'lucide-react';
-import SearchBar from './SearchBar';
+import React, { useState, useEffect, useRef } from "react";
+import { X, XCircle, Search, Globe, ChevronDown, Check } from "lucide-react";
+import SearchBar from "./SearchBar";
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -15,17 +15,19 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   languages,
   wordLists,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0]?.id || '');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    languages[0]?.id || ""
+  );
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [isClosing, setIsClosing] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const languageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (searchTerm.length >= 2) {
+    if (searchTerm) {
       const words = wordLists[selectedLanguage] || [];
-      const results = words.filter(word => 
+      const results = words.filter((word) =>
         word.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResults(results);
@@ -37,13 +39,16 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   // Close language dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (languageRef.current && !languageRef.current.contains(event.target as Node)) {
+      if (
+        languageRef.current &&
+        !languageRef.current.contains(event.target as Node)
+      ) {
         setIsLanguageOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleClose = () => {
@@ -56,11 +61,18 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
 
   const highlightMatch = (word: string) => {
     if (!searchTerm) return word;
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
-    return word.split(regex).map((part, i) => 
-      regex.test(part) ? 
-        <span key={i} className="bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300 font-medium">{part}</span> : 
+    const regex = new RegExp(`(${searchTerm})`, "gi");
+    return word.split(regex).map((part, i) =>
+      regex.test(part) ? (
+        <span
+          key={i}
+          className="bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300 font-medium"
+        >
+          {part}
+        </span>
+      ) : (
         part
+      )
     );
   };
 
@@ -68,30 +80,38 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div 
+      <div
         className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-200 ${
-          isClosing ? 'opacity-0' : 'opacity-100'
-        }`} 
+          isClosing ? "opacity-0" : "opacity-100"
+        }`}
         onClick={handleClose}
       />
-      
-      <div 
+
+      <div
         className={`relative w-full max-w-2xl mx-4 bg-white dark:bg-gray-900 rounded-xl shadow-xl transform transition-all duration-200 ${
-          isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
+          isClosing ? "scale-95 opacity-0" : "scale-100 opacity-100"
         } flex flex-col`}
-        style={{ height: '600px', maxHeight: '80vh', minHeight: '400px', display: 'flex', flexDirection: 'column' }}
+        style={{
+          height: "600px",
+          maxHeight: "80vh",
+          minHeight: "400px",
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <Globe className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Global Search</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Global Search
+            </h2>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 rounded-lg transition-colors"
             aria-label="Close modal"
           >
-            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <XCircle className="w-6 h-6 text-gray-500 dark:text-gray-400" />
           </button>
         </div>
 
@@ -113,13 +133,24 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                 <span className="flex items-center">
                   {selectedLanguage ? (
                     <>
-                      <span className="mr-2">{languages.find(lang => lang.id === selectedLanguage)?.name}</span>
+                      <span className="mr-2">
+                        {
+                          languages.find((lang) => lang.id === selectedLanguage)
+                            ?.name
+                        }
+                      </span>
                     </>
                   ) : (
-                    <span className="text-secondary-500">Select a language</span>
+                    <span className="text-secondary-500">
+                      Select a language
+                    </span>
                   )}
                 </span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${
+                    isLanguageOpen ? "rotate-180" : ""
+                  }`}
+                />
               </button>
 
               {isLanguageOpen && (
@@ -160,17 +191,20 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                   </div>
                 ))}
               </div>
-            ) : searchTerm.length >= 2 ? (
+            ) : searchTerm ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
                 <Search className="w-12 h-12 mb-3 opacity-50" />
                 <h3 className="text-lg font-medium mb-1">No matches found</h3>
-                <p className="text-sm">Try different keywords or check another language</p>
+                <p className="text-sm">
+                  Try different keywords or check another language
+                </p>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
                 <Globe className="w-12 h-12 mb-3 opacity-50" />
-                <h3 className="text-lg font-medium mb-1">Start searching</h3>
-                <p className="text-sm">Type at least 2 characters to begin</p>
+                <h3 className="text-lg font-medium mb-1 text-gray-500 dark:text-gray-400">
+                  Start searching
+                </h3>
               </div>
             )}
           </div>
@@ -180,4 +214,4 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   );
 };
 
-export default GlobalSearchModal; 
+export default GlobalSearchModal;
