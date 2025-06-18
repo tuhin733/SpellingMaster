@@ -222,7 +222,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             <div className="flex items-center gap-2">
               {showGlobalSearch && (
                 <>
-                  <Tooltip content="Global Search" position="top">
+                  <Tooltip content="Global Search [ Ctrl+K ]" position="top">
                     <button
                       onClick={onGlobalSearch}
                       className="flex items-center justify-center p-1.5 text-sm transition-colors rounded-lg shadow-sm border

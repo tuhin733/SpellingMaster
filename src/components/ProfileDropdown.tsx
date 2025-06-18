@@ -207,7 +207,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                 className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-800/50 rounded-lg transition-colors"
               >
                 <Settings className="w-4 h-4" />
-                Settings
+                Settings <kbd className="text-[12px]">Alt+S</kbd>
               </button>
 
               <button

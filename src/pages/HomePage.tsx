@@ -10,6 +10,7 @@ import Spinner from "../components/Spinner";
 import { useAuth } from "../contexts/AuthContext";
 import GlobalSearchModal from "../components/GlobalSearchModal";
 import { useGlobalSearch } from "../hooks/useGlobalSearch";
+import { useSettings } from "../contexts/SettingsContext";
 
 const HomePage: React.FC = () => {
   const { wordlists, isLoading, refreshWordlists } = useApp();
@@ -18,21 +19,23 @@ const HomePage: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [pageReady, setPageReady] = useState(false);
-
-  // Set up global search
   const {
-    isGlobalSearchOpen,
     openGlobalSearch,
     closeGlobalSearch,
     languages,
     wordLists,
+    isGlobalSearchOpen,
   } = useGlobalSearch({
-    languages: wordlists.map(wl => ({ id: wl.id, name: wl.language })),
-    wordLists: wordlists.reduce((acc, wl) => ({
-      ...acc,
-      [wl.id]: wl.words
-    }), {})
+    languages: wordlists.map((wl) => ({ id: wl.id, name: wl.language })),
+    wordLists: wordlists.reduce(
+      (acc, wl) => ({
+        ...acc,
+        [wl.id]: wl.words,
+      }),
+      {}
+    ),
   });
+  const { openSettings } = useSettings();
 
   useEffect(() => {
     // Set page as ready once we have either wordlists or confirmed we're not loading
@@ -40,6 +43,25 @@ const HomePage: React.FC = () => {
       setPageReady(true);
     }
   }, [wordlists, isLoading]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+      // Ctrl+K or Cmd+K for Global Search
+      if (ctrlOrCmd && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        openGlobalSearch();
+      }
+      // Alt+S for Settings
+      if (e.altKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        openSettings();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [openGlobalSearch, openSettings]);
 
   const filterOptions: FilterOption[] = [
     { label: "All Languages", value: "all" },
