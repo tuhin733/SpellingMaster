@@ -1,12 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
-import { X, XCircle, Search, Globe, ChevronDown, Check } from "lucide-react";
+import {
+  X,
+  XCircle,
+  Search,
+  Globe,
+  ChevronDown,
+  Check,
+  Sparkles,
+} from "lucide-react";
 import SearchBar from "./SearchBar";
+import { searchWithAI } from "../utils/aiSearch";
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
   languages: { id: string; name: string }[];
   wordLists: { [key: string]: string[] };
+}
+
+interface AISearchResult {
+  word: string;
+  confidence: number;
 }
 
 const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
@@ -20,8 +34,11 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     languages[0]?.id || ""
   );
   const [searchResults, setSearchResults] = useState<string[]>([]);
+  const [aiResults, setAiResults] = useState<AISearchResult[]>([]);
   const [isClosing, setIsClosing] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const languageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,10 +48,33 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         word.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResults(results);
+
+      // If no results found in wordlist, try AI search
+      if (results.length === 0) {
+        setIsSearching(true);
+        setSearchError(null);
+        const selectedLang =
+          languages.find((lang) => lang.id === selectedLanguage)?.name ||
+          selectedLanguage;
+
+        searchWithAI(searchTerm, selectedLang)
+          .then((results) => {
+            setAiResults(results);
+            setIsSearching(false);
+          })
+          .catch((error) => {
+            console.error("AI search failed:", error);
+            setSearchError("AI search is currently unavailable");
+            setIsSearching(false);
+          });
+      } else {
+        setAiResults([]);
+      }
     } else {
       setSearchResults([]);
+      setAiResults([]);
     }
-  }, [searchTerm, selectedLanguage, wordLists]);
+  }, [searchTerm, selectedLanguage, wordLists, languages]);
 
   // Close language dropdown when clicking outside
   useEffect(() => {
@@ -178,7 +218,15 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           </div>
 
           <div className="mt-4 flex-1 min-h-0 overflow-y-auto custom-scrollbar">
-            {searchResults.length > 0 ? (
+            {isSearching ? (
+              <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 dark:border-primary-400 mb-3" />
+                <h3 className="text-lg font-medium mb-1">
+                  Searching with AI...
+                </h3>
+                <p className="text-sm">This may take a few seconds</p>
+              </div>
+            ) : searchResults.length > 0 ? (
               <div className="grid gap-2">
                 {searchResults.map((word, index) => (
                   <div
@@ -190,6 +238,31 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : aiResults.length > 0 ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-primary-600 dark:text-primary-400 mb-2">
+                  <Sparkles className="w-5 h-5" />
+                  <span className="text-sm font-medium">AI Suggestions</span>
+                </div>
+                <div className="grid gap-2">
+                  {aiResults.map((result, index) => (
+                    <div
+                      key={index}
+                      className="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer group"
+                    >
+                      <div className="text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white">
+                        {highlightMatch(result.word)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : searchError ? (
+              <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+                <XCircle className="w-12 h-12 mb-3 opacity-50" />
+                <h3 className="text-lg font-medium mb-1">Search Error</h3>
+                <p className="text-sm">{searchError}</p>
               </div>
             ) : searchTerm ? (
               <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
