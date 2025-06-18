@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { Search, X, Filter, ChevronDown, Check, Globe } from "lucide-react";
+import Tooltip from "./Tooltip";
 
 export type FilterOption = {
   label: string;
@@ -221,28 +222,32 @@ const SearchBar: React.FC<SearchBarProps> = ({
             <div className="flex items-center gap-2">
               {showGlobalSearch && (
                 <>
-                  <button
-                    onClick={onGlobalSearch}
-                    className="flex items-center justify-center p-1.5 text-sm transition-colors rounded-lg shadow-sm border
-                      bg-gray-100 text-gray-600 hover:text-gray-800 dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-200 
-                      border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    aria-label="Global search"
-                  >
-                    <Globe className="w-4 h-4" />
-                  </button>
+                  <Tooltip content="Global Search" position="top">
+                    <button
+                      onClick={onGlobalSearch}
+                      className="flex items-center justify-center p-1.5 text-sm transition-colors rounded-lg shadow-sm border
+                        bg-gray-100 text-gray-600 hover:text-gray-800 dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-200 
+                        border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      aria-label="Global search"
+                    >
+                      <Globe className="w-4 h-4" />
+                    </button>
+                  </Tooltip>
                   {filterOptions.length > 0 && (
                     <div className="h-8 w-px bg-gray-200 dark:bg-gray-700" />
                   )}
                 </>
               )}
               {filterOptions.length > 0 && (
-                <button
-                  ref={filterButtonRef}
-                  onClick={toggleFilter}
-                  className={filterButtonClasses}
-                >
-                  <Filter className={filterIconClasses} />
-                </button>
+                <Tooltip content="Filter" position="top">
+                  <button
+                    ref={filterButtonRef}
+                    onClick={toggleFilter}
+                    className={filterButtonClasses}
+                  >
+                    <Filter className={filterIconClasses} />
+                  </button>
+                </Tooltip>
               )}
             </div>
           </>
