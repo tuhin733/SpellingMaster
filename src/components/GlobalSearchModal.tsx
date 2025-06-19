@@ -19,6 +19,7 @@ import { Wordlist } from "../types";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../contexts/AppContext";
 import styles from "../styles/loader.module.css";
+import { useScrollLock } from "../hooks/useScrollLock";
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -63,6 +64,8 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   const languageRef = useRef<HTMLDivElement>(null);
   const wordlistRef = useRef<HTMLDivElement>(null);
   const { refreshWordlists, wordlists } = useApp();
+
+  useScrollLock(isOpen);
 
   // Reset state when modal is opened/closed
   useEffect(() => {
