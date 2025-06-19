@@ -332,10 +332,16 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <Globe className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
               Global Search
             </h2>
+            <span
+              className="ml-2 px-2 py-0.5 text-xs font-semibold bg-blue-100 dark:bg-blue-900/40 rounded  text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 flex items-center gap-1"
+              title="AI-powered search"
+            >
+              <Sparkles className="w-3.5 h-3.5 mr-0.5 text-blue-700 dark:text-blue-300" />
+              AI Powered
+            </span>
           </div>
           <button
             onClick={handleClose}
