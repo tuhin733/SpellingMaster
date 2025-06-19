@@ -36,6 +36,25 @@ interface AISearchResult {
 type Tab = "search" | "selected";
 type SaveMode = "create" | "append";
 
+const LANGUAGE_OPTIONS = [
+  { code: "en-US", name: "English" },
+  { code: "fr-FR", name: "French" },
+  { code: "de-DE", name: "German" },
+  { code: "es-ES", name: "Spanish" },
+  { code: "pt-BR", name: "Portuguese" },
+  { code: "hi-IN", name: "Hindi" },
+  { code: "ar-SA", name: "Arabic" },
+  { code: "ru-RU", name: "Russian" },
+  { code: "zh-CN", name: "Chinese" },
+  { code: "ja-JP", name: "Japanese" },
+  { code: "ko-KR", name: "Korean" },
+  { code: "tr-TR", name: "Turkish" },
+  { code: "ta-IN", name: "Tamil" },
+  { code: "vi-VN", name: "Vietnamese" },
+  { code: "ur-PK", name: "Urdu" },
+  { code: "bn-IN", name: "Bengali" },
+];
+
 const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   isOpen,
   onClose,
@@ -236,12 +255,16 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
 
       if (saveMode === "create") {
         // Create new wordlist
+        const langOption = LANGUAGE_OPTIONS.find(
+          (opt) => opt.name === selectedLang.name
+        );
+        const languageCode = langOption ? langOption.code : selectedLang.id;
         const wordlist: Wordlist = {
           id: crypto.randomUUID(),
           title: newWordlistName.trim(),
           name: newWordlistName.trim(),
           language: selectedLang.name,
-          languageCode: selectedLang.id,
+          languageCode,
           words: selectedWords,
           description: `Custom wordlist created from search results`,
           source: "user",
