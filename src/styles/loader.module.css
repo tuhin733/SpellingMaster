@@ -13,10 +13,10 @@
   transform-style: preserve-3d;
   backdrop-filter: blur(0.5px);
   border: 1.9px solid;
-  border-top-color: rgba(220, 128, 109, 0.5);
-  border-bottom-color: rgba(151, 93, 193, 0.5);
-  border-left-color: rgba(151, 93, 193, 0.5);
-  border-right-color: rgba(220, 128, 109, 0.5);
+  border-top-color: rgba(66, 135, 245, 0.5);
+  border-bottom-color: rgba(30, 87, 153, 0.5);
+  border-left-color: rgba(30, 87, 153, 0.5);
+  border-right-color: rgba(66, 135, 245, 0.5);
   opacity: 0;
 }
 
