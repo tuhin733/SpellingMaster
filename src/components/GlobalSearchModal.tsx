@@ -18,6 +18,7 @@ import * as db from "../utils/indexedDb";
 import { Wordlist } from "../types";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../contexts/AppContext";
+import styles from "../styles/loader.module.css";
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -446,11 +447,16 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               <div className="mt-4 flex-1 min-h-0 overflow-y-auto custom-scrollbar">
                 {isSearching ? (
                   <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 dark:border-primary-400 mb-3" />
-                    <h3 className="text-lg font-medium mb-1">
-                      Searching with AI...
-                    </h3>
-                    <p className="text-sm">This may take a few seconds</p>
+                    <div className={`${styles.base} my-8`}>
+                      {Array.from({ length: 15 }, (_, i) => (
+                        <div
+                          key={i + 1}
+                          className={`${styles.circ} ${
+                            styles[`circ-${i + 1}`]
+                          }`}
+                        ></div>
+                      ))}
+                    </div>
                   </div>
                 ) : searchResults.length > 0 ? (
                   <div className="grid gap-2">
