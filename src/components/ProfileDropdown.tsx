@@ -163,7 +163,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         <Tooltip content="Account" position="bottom">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-1.5 py-2 px-2 rounded-full bg-transparent hover:bg-gray-100/80 text-primary-600 transition-all duration-200 focus:outline-none dark:hover:bg-gray-700/40 dark:text-primary-200"
+            className="flex items-center gap-1.5 py-2 px-2 rounded-full bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700 text-primary-600 transition-all duration-200 focus:outline-none dark:text-primary-200"
           >
             {renderAvatar("sm")}
           </button>
@@ -192,7 +192,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                 <Link
                   to="/statistics"
                   onClick={() => setIsOpen(false)}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-800/50 rounded-lg transition-colors"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-700/50 rounded-lg transition-colors"
                 >
                   <PieChart className="w-4 h-4" />
                   Statistics
@@ -204,7 +204,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                   openSettings();
                   setIsOpen(false);
                 }}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-800/50 rounded-lg transition-colors"
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-700/50 rounded-lg transition-colors"
               >
                 <Settings className="w-4 h-4" />
                 Settings <kbd className="text-[12px]">Alt+S</kbd>
@@ -212,7 +212,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-800/50 rounded-lg transition-colors"
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-700/50 rounded-lg transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 Sign out
