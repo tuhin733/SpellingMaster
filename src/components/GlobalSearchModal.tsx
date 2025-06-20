@@ -410,10 +410,12 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             <>
               <div className="flex gap-4 mb-4">
                 <div className="flex-1">
-                  <SearchBar
-                    onSearch={setSearchTerm}
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search words..."
-                    className="w-full"
+                    className="w-full px-4 py-3 text-sm bg-white text-gray-800 border-2 border-gray-200 rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-200 hover:border-gray-300 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:hover:border-gray-600 dark:focus:ring-blue-800"
                   />
                 </div>
                 <div className="relative" ref={languageRef}>
