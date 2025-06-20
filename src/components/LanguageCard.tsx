@@ -230,8 +230,6 @@ const LanguageCard: React.FC<LanguageCardProps> = ({ wordlist }) => {
                 tooltipContent={`${completed}/${totalLevels} completed`}
                 size={40}
                 strokeWidth={4}
-                progressColor={percentage === 100 ? "#0ea5e9" : "#3b82f6"}
-                circleColor="#e2e8f0"
               />
             </div>
           </div>

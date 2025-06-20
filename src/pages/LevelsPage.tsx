@@ -98,13 +98,7 @@ const LevelsPage: React.FC = () => {
             </div>
 
             <div className="mt-3 sm:mt-0 sm:ml-4 flex flex-col items-center">
-              <CircleProgress
-                progress={percentage}
-                size={60}
-                strokeWidth={6}
-                progressColor="#3b82f6"
-                circleColor="#e2e8f0"
-              />
+              <CircleProgress progress={percentage} size={60} strokeWidth={6} />
             </div>
           </div>
 
