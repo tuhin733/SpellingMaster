@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-import { SettingItemProps } from '../../types/settings';
+import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { SettingItemProps } from "../../types/settings";
 
 const SettingItem: React.FC<SettingItemProps> = ({
   icon,
@@ -47,14 +47,34 @@ const SettingItem: React.FC<SettingItemProps> = ({
                     onChange(option.value);
                     setIsOpen(false);
                   }}
-                  className={`block w-full px-4 py-2 text-sm text-left transition-colors ${
+                  className={`block w-full px-4 py-2 text-sm text-left transition-colors flex items-center justify-between group ${
                     option.value === value
                       ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
                       : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700/50"
                   }`}
                   disabled={isLoading}
                 >
-                  {option.label}
+                  <span>{option.label}</span>
+                  <span>
+                    <svg
+                      className={`w-4 h-4 transition-colors
+                        ${
+                          option.value === value
+                            ? "text-blue-600 dark:text-blue-400 opacity-100"
+                            : "opacity-0 group-hover:opacity-100 group-hover:text-gray-400"
+                        }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </span>
                 </button>
               ))}
             </div>
@@ -108,14 +128,34 @@ const SettingItem: React.FC<SettingItemProps> = ({
                       onChange(option.value);
                       setIsOpen(false);
                     }}
-                    className={`block w-full px-4 py-2 text-sm text-left transition-colors ${
+                    className={`block w-full px-4 py-2 text-sm text-left transition-colors flex items-center justify-between group ${
                       option.value === value
                         ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
                         : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700/50"
                     }`}
                     disabled={isLoading}
                   >
-                    {option.label}
+                    <span>{option.label}</span>
+                    <span>
+                      <svg
+                        className={`w-4 h-4 transition-colors
+                          ${
+                            option.value === value
+                              ? "text-blue-600 dark:text-blue-400 opacity-100"
+                              : "opacity-0 group-hover:opacity-100 group-hover:text-gray-400"
+                          }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -127,4 +167,4 @@ const SettingItem: React.FC<SettingItemProps> = ({
   );
 };
 
-export default SettingItem; 
+export default SettingItem;

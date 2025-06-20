@@ -615,7 +615,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
                               }}
                               className={`w-full px-4 ${
                                 isMobile ? "py-4" : "py-2"
-                              } text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between ${
+                              } text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between group ${
                                 selectedLanguage === lang.name
                                   ? "text-secondary-700 dark:text-secondary-300"
                                   : "text-secondary-700 dark:text-secondary-300"
@@ -624,9 +624,26 @@ const UploadModal: React.FC<UploadModalProps> = ({
                               <div className="flex items-center">
                                 <span>{lang.name}</span>
                               </div>
-                              {selectedLanguage === lang.name && (
-                                <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                              )}
+                              <span>
+                                <svg
+                                  className={`w-3.5 h-3.5 transition-colors
+                                    ${
+                                      selectedLanguage === lang.name
+                                        ? "text-blue-600 dark:text-blue-400 opacity-100"
+                                        : "opacity-0 group-hover:opacity-100 group-hover:text-gray-400"
+                                    }`}
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 13l4 4L19 7"
+                                  />
+                                </svg>
+                              </span>
                             </button>
                           ))}
                         </div>

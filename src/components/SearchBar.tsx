@@ -308,18 +308,35 @@ const SearchBar: React.FC<SearchBarProps> = ({
                       onFilterChange?.(option.value);
                       setIsFilterOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-1.5 text-sm transition-all duration-200 flex items-center justify-between
-                    ${
-                      selectedFilter === option.value
-                        ? "text-gray-700 dark:text-gray-200"
-                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
-                    }
-                  `}
+                    className={`w-full text-left px-3 py-1.5 text-sm transition-all duration-200 flex items-center justify-between group
+                      ${
+                        selectedFilter === option.value
+                          ? "text-gray-700 dark:text-gray-200"
+                          : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
+                      }
+                    `}
                   >
                     <span>{option.label}</span>
-                    {selectedFilter === option.value && (
-                      <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                    )}
+                    <span>
+                      <svg
+                        className={`w-3.5 h-3.5 transition-colors
+                          ${
+                            selectedFilter === option.value
+                              ? "text-blue-600 dark:text-blue-400 opacity-100"
+                              : "opacity-0 group-hover:opacity-100 group-hover:text-gray-400"
+                          }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </span>
                   </button>
                 ))}
               </div>

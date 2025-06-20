@@ -456,12 +456,29 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                               setSelectedLanguage(lang.id);
                               setIsLanguageOpen(false);
                             }}
-                            className="w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between text-secondary-700 dark:text-secondary-300"
+                            className="w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between group text-secondary-700 dark:text-secondary-300"
                           >
                             <span>{lang.name}</span>
-                            {selectedLanguage === lang.id && (
-                              <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                            )}
+                            <span>
+                              <svg
+                                className={`w-3.5 h-3.5 transition-colors
+                                  ${
+                                    selectedLanguage === lang.id
+                                      ? "text-blue-600 dark:text-blue-400 opacity-100"
+                                      : "opacity-0 group-hover:opacity-100 group-hover:text-gray-400"
+                                  }`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
+                            </span>
                           </button>
                         ))}
                       </div>
@@ -641,12 +658,29 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                                     setSelectedWordlist(wordlist.id);
                                     setIsWordlistOpen(false);
                                   }}
-                                  className="w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between text-secondary-700 dark:text-secondary-300"
+                                  className={`w-full px-4 py-2 text-sm text-left hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors flex items-center justify-between group text-secondary-700 dark:text-secondary-300`}
                                 >
                                   <span>{wordlist.title}</span>
-                                  {selectedWordlist === wordlist.id && (
-                                    <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                                  )}
+                                  <span>
+                                    <svg
+                                      className={`w-3.5 h-3.5 transition-colors
+                                        ${
+                                          selectedWordlist === wordlist.id
+                                            ? "text-blue-600 dark:text-blue-400 opacity-100"
+                                            : "opacity-0 group-hover:opacity-100 group-hover:text-gray-400"
+                                        }`}
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M5 13l4 4L19 7"
+                                      />
+                                    </svg>
+                                  </span>
                                 </button>
                               ))}
                           </div>
