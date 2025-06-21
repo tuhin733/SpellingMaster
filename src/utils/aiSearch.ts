@@ -20,17 +20,23 @@ export const searchWithAI = async (
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-    const prompt = `You are a helpful assistant that helps find words in ${language}. 
-    When given a search term, return a JSON array of potential matching words.
-    Each result should have a confidence score between 0 and 1.
-    
-    Find words similar to "${searchTerm}" in ${language}.
-    
-    Return the response in this exact JSON format:
+    const prompt = `You are a fuzzy word finder assistant. Your task is to suggest full words based on partial input or misspellings in ${language}.
+
+    The user may input:
+    - Only the beginning of the word (e.g., "psy" for "psychology")
+    - An approximate spelling (e.g., "helo" for "hello")
+
+    Given the input: "${searchTerm}", return a JSON array of 5 to 10 possible complete words the user might be looking for.
+
+    Each result must include:
+    - "word": the suggested full word
+    - "confidence": a number from 0 to 1 showing how confident you are
+
+    Output format:
     [
       {
         "word": "example word",
-        "confidence": 0.8
+        "confidence": 0.95
       }
     ]`;
 
