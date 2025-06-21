@@ -130,20 +130,16 @@ export const CircleProgress: React.FC<CircleProgressProps> = ({
           style={{ padding: textPadding }}
         >
           <span
-            className={"font-medium tracking-tight"}
+            className={`font-medium tracking-tight ${
+              displayProgress <= 0 ? "text-gray-900 dark:text-gray-100" : ""
+            }`}
             style={{
               fontSize: `${fontSize}px`,
               lineHeight: 1,
               textRendering: "geometricPrecision",
               WebkitFontSmoothing: "antialiased",
               MozOsxFontSmoothing: "grayscale",
-              color:
-                displayProgress <= 0
-                  ? window.matchMedia &&
-                    window.matchMedia("(prefers-color-scheme: dark)").matches
-                    ? "#fff"
-                    : "#000"
-                  : progressColor,
+              color: displayProgress > 0 ? progressColor : undefined,
             }}
           >
             {displayProgress}%
