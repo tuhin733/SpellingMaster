@@ -273,7 +273,7 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       regex.test(part) ? (
         <span
           key={i}
-          className="bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300 font-medium"
+          className="text-primary-700 dark:text-primary-500 font-medium"
         >
           {part}
         </span>
