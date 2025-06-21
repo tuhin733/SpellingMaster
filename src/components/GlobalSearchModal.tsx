@@ -21,6 +21,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../contexts/AppContext";
 import styles from "../styles/loader.module.css";
 import { useScrollLock } from "../hooks/useScrollLock";
+import Tooltip from "./Tooltip";
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -480,13 +481,15 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               AI Powered
             </span>
           </div>
-          <button
-            onClick={handleClose}
-            className="p-2 rounded-lg transition-colors"
-            aria-label="Close modal"
-          >
-            <XCircle className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-          </button>
+          <Tooltip content="Close" position="top">
+            <button
+              onClick={handleClose}
+              className="p-2 rounded-lg transition-colors"
+              aria-label="Close modal"
+            >
+              <XCircle className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+            </button>
+          </Tooltip>
         </div>
 
         {/* Tabs */}

@@ -6,18 +6,14 @@ import ConfirmDialog from "./ConfirmDialog";
 import Toast, { ToastType } from "./Toast";
 import { UserSettings } from "../types/settings";
 import {
-  Text,
   XCircle,
   RefreshCw,
   AlertTriangle,
   Settings2,
-  Volume2,
   FileText,
   Trash2,
   BookMarked,
-  Clock,
   Palette,
-  Bell,
   Info,
   Github,
   MessageSquare,
@@ -25,7 +21,6 @@ import {
   Mail,
   HelpCircle,
   ChevronDown,
-  Type,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { playSound } from "../utils/sound";
@@ -35,7 +30,6 @@ import { isOnline } from "../config/firebase";
 import { Wordlist } from "../types";
 import Tooltip from "./Tooltip";
 import { useScrollLock } from "../hooks/useScrollLock";
-import { Switch } from "@headlessui/react";
 import {
   TabType,
   TabItem,
@@ -44,8 +38,6 @@ import {
 } from "../types/settings";
 import AppearanceTab from "./settings/tabs/AppearanceTab";
 import { StudyTab } from "./settings/tabs/StudyTab";
-import SettingItem from "./settings/SettingItem";
-import SettingToggle from "./settings/SettingToggle";
 import DangerButton from "./settings/DangerButton";
 
 interface SettingsModalProps {
