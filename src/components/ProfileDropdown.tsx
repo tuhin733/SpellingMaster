@@ -221,7 +221,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                 Sign out
               </button>
 
-              <div className="h-px bg-gray-200 dark:bg-gray-700/50 my-1"></div>
+              <div className="h-px bg-gray-200 dark:bg-gray-600/50 my-1"></div>
 
               <button
                 onClick={() => {
