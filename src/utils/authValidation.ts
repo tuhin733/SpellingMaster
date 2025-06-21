@@ -1,7 +1,8 @@
 import { ValidationRule } from "./formValidation";
 
-// Password must be at least 6 characters long and can contain letters and numbers
-const passwordRegex = /^[A-Za-z0-9]{6,}$/;
+// Updated password regex to support complex passwords with special characters
+// Allows: letters (a-z, A-Z), numbers (0-9), and common special characters
+const passwordRegex = /^[A-Za-z0-9@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~!]{6,}$/;
 
 export const validatePassword = (
   password: string
@@ -21,7 +22,7 @@ export const validatePassword = (
     return {
       isValid: false,
       error:
-        "Your password can only contain letters and numbers, and must be at least 6 characters long",
+        "Your password can contain letters, numbers, and special characters, and must be at least 6 characters long",
     };
   }
 
@@ -73,7 +74,7 @@ export const authValidationRules = {
     {
       validate: (value: string) => validatePassword(value).isValid,
       message:
-        "Your password can only contain letters and numbers, and must be at least 6 characters long",
+        "Your password can contain letters, numbers, and special characters, and must be at least 6 characters long",
     },
   ] as ValidationRule[],
 };
