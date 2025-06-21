@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   X,
   XCircle,
@@ -11,8 +11,9 @@ import {
   List,
   AlertCircle,
   Save,
+  History,
+  Clock,
 } from "lucide-react";
-import SearchBar from "./SearchBar";
 import { searchWithAI } from "../utils/aiSearch";
 import * as db from "../utils/indexedDb";
 import { Wordlist } from "../types";
@@ -31,6 +32,13 @@ interface GlobalSearchModalProps {
 interface AISearchResult {
   word: string;
   confidence: number;
+}
+
+interface SearchHistoryItem {
+  id: string;
+  term: string;
+  language: string;
+  timestamp: number;
 }
 
 type Tab = "search" | "selected";
@@ -80,11 +88,92 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   const [saveMode, setSaveMode] = useState<SaveMode>("create");
   const [selectedWordlist, setSelectedWordlist] = useState<string>("");
   const [isWordlistOpen, setIsWordlistOpen] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const languageRef = useRef<HTMLDivElement>(null);
   const wordlistRef = useRef<HTMLDivElement>(null);
+  const historyRef = useRef<HTMLDivElement>(null);
   const { refreshWordlists, wordlists } = useApp();
 
   useScrollLock(isOpen);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 200);
+  };
+
+  const loadSearchHistory = useCallback(async () => {
+    try {
+      const history = await db.getSearchHistory();
+      setSearchHistory(history);
+    } catch (error) {
+      console.error("Failed to load search history:", error);
+    }
+  }, []);
+
+  const runSearch = useCallback(
+    (term: string, language: string) => {
+      const words = wordLists[language] || [];
+      const results = words.filter((word) =>
+        word.toLowerCase().includes(term.toLowerCase())
+      );
+      setSearchResults(results);
+
+      // If no results found in wordlist, try AI search
+      if (results.length === 0) {
+        setIsSearching(true);
+        setSearchError(null);
+        const selectedLang =
+          languages.find((lang) => lang.id === language)?.name || language;
+
+        searchWithAI(term, selectedLang)
+          .then((results) => {
+            setAiResults(results);
+            setIsSearching(false);
+          })
+          .catch((error) => {
+            console.error("AI search failed:", error);
+            setSearchError("AI search is currently unavailable");
+            setIsSearching(false);
+          });
+      } else {
+        setAiResults([]);
+      }
+    },
+    [languages, wordLists]
+  );
+
+  const saveSearchToHistory = useCallback(
+    async (term: string, language: string) => {
+      if (!term.trim()) return;
+      try {
+        await db.addSearchHistory(term.trim(), language);
+        await loadSearchHistory();
+      } catch (error) {
+        console.error("Failed to save search history:", error);
+      }
+    },
+    [loadSearchHistory]
+  );
+
+  useEffect(() => {
+    const historySaveTimer = setTimeout(() => {
+      if (searchTerm.trim()) {
+        saveSearchToHistory(searchTerm, selectedLanguage);
+      }
+    }, 5000);
+
+    return () => clearTimeout(historySaveTimer);
+  }, [searchTerm, selectedLanguage, saveSearchToHistory]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadSearchHistory();
+    }
+  }, [isOpen, loadSearchHistory]);
 
   // Reset state when modal is opened/closed
   useEffect(() => {
@@ -100,6 +189,7 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       setCreateProgress(0);
       setSaveMode("create");
       setSelectedWordlist("");
+      setIsHistoryOpen(false);
     }
   }, [isOpen, languages]);
 
@@ -119,39 +209,17 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   }, [isCreating, createProgress]);
 
   useEffect(() => {
-    if (searchTerm) {
-      const words = wordLists[selectedLanguage] || [];
-      const results = words.filter((word) =>
-        word.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setSearchResults(results);
-
-      // If no results found in wordlist, try AI search
-      if (results.length === 0) {
-        setIsSearching(true);
-        setSearchError(null);
-        const selectedLang =
-          languages.find((lang) => lang.id === selectedLanguage)?.name ||
-          selectedLanguage;
-
-        searchWithAI(searchTerm, selectedLang)
-          .then((results) => {
-            setAiResults(results);
-            setIsSearching(false);
-          })
-          .catch((error) => {
-            console.error("AI search failed:", error);
-            setSearchError("AI search is currently unavailable");
-            setIsSearching(false);
-          });
+    const debounceTimer = setTimeout(() => {
+      if (searchTerm) {
+        runSearch(searchTerm, selectedLanguage);
       } else {
+        setSearchResults([]);
         setAiResults([]);
       }
-    } else {
-      setSearchResults([]);
-      setAiResults([]);
-    }
-  }, [searchTerm, selectedLanguage, wordLists, languages]);
+    }, 300); // Debounce search to avoid too many requests
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, selectedLanguage, runSearch]);
 
   // Close language dropdown when clicking outside
   useEffect(() => {
@@ -183,13 +251,20 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsClosing(false);
-      onClose();
-    }, 200);
-  };
+  // Close history dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        historyRef.current &&
+        !historyRef.current.contains(event.target as Node)
+      ) {
+        setIsHistoryOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const highlightMatch = (word: string) => {
     if (!searchTerm) return word;
@@ -323,15 +398,50 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       setSelectedWords([]);
       setActiveTab("search");
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Save wordlist error:", error);
       setCreateError(
-        error.message || "Failed to save wordlist. Please try again."
+        error instanceof Error
+          ? error.message
+          : "Failed to save wordlist. Please try again."
       );
       setCreateProgress(0);
     } finally {
       setIsCreating(false);
     }
+  };
+
+  const handleHistoryItemClick = (historyItem: SearchHistoryItem) => {
+    setSearchTerm(historyItem.term);
+    setSelectedLanguage(historyItem.language);
+    saveSearchToHistory(historyItem.term, historyItem.language);
+    setIsHistoryOpen(false);
+  };
+
+  const handleRemoveHistoryItem = async (
+    id: string,
+    event: React.MouseEvent
+  ) => {
+    event.stopPropagation();
+    try {
+      await db.removeSearchHistory(id);
+      await loadSearchHistory();
+    } catch (error) {
+      console.error("Failed to remove search history item:", error);
+    }
+  };
+
+  const formatHistoryTime = (timestamp: number) => {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
   };
 
   if (!isOpen) return null;
@@ -409,14 +519,102 @@ const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           {activeTab === "search" ? (
             <>
               <div className="flex gap-4 mb-4">
-                <div className="flex-1">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search words..."
-                    className="w-full px-4 py-3 text-sm bg-white text-gray-800 border-2 border-gray-200 rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-200 hover:border-gray-300 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:hover:border-gray-600 dark:focus:ring-blue-800"
+                    className="w-full pl-12 pr-12 py-3 text-sm bg-white text-gray-800 border-2 border-gray-200 rounded-xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-200 hover:border-gray-300 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 dark:hover:border-gray-600 dark:focus:ring-blue-800"
                   />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    {searchTerm ? (
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        title="Clear search"
+                      >
+                        <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+                        className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        title="Search history"
+                      >
+                        <History className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* History Dropdown */}
+                  <AnimatePresence>
+                    {isHistoryOpen && (
+                      <motion.div
+                        ref={historyRef}
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700 max-h-[300px] overflow-y-auto"
+                      >
+                        {searchHistory.length > 0 ? (
+                          <div className="py-1">
+                            {searchHistory.map((historyItem) => (
+                              <div
+                                key={historyItem.id}
+                                onClick={() =>
+                                  handleHistoryItemClick(historyItem)
+                                }
+                                className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer flex items-center justify-between group"
+                              >
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                  <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <div className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
+                                      {historyItem.term}
+                                    </div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                                      <span>
+                                        {languages.find(
+                                          (lang) =>
+                                            lang.id === historyItem.language
+                                        )?.name || historyItem.language}
+                                      </span>
+                                      <span>•</span>
+                                      <span>
+                                        {formatHistoryTime(
+                                          historyItem.timestamp
+                                        )}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={(e) =>
+                                    handleRemoveHistoryItem(historyItem.id, e)
+                                  }
+                                  className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors opacity-0 group-hover:opacity-100"
+                                  title="Remove from history"
+                                >
+                                  <X className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
+                            <History className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">No search history yet</p>
+                            <p className="text-xs mt-1">
+                              Your recent searches will appear here
+                            </p>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
                 <div className="relative" ref={languageRef}>
                   <button

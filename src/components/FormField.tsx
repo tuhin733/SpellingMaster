@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ValidationRule } from "../utils/formValidation";
+import { debounce } from "../utils";
 
 interface FormFieldProps {
   id: string;
@@ -34,6 +35,9 @@ const FormField: React.FC<FormFieldProps> = ({
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
 
+  // Debounced onChange
+  const debouncedOnChange = useRef(debounce(onChange, 400)).current;
+
   // Handle external error prop
   useEffect(() => {
     if (error) {
@@ -63,7 +67,7 @@ const FormField: React.FC<FormFieldProps> = ({
   ) => {
     const newValue = e.target.value;
     setIsDirty(true);
-    onChange(newValue);
+    debouncedOnChange(newValue);
 
     if (touched) {
       validate(newValue);
